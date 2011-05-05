@@ -1,0 +1,26 @@
+%!TEX root = main.tex
+\section{Eigenschaften von Bernstein-Polynomen}
+a)
+\begin{align}
+	B_{ji}(a+b-t) &= \frac{q!}{i!j!} \left(\frac{b-(a+b-t)}{b-a}\right)^j \left(\frac{(a+b-t)-a}{b-a}\right)^i \\
+	&= \frac{q!}{i!j!} \left(\frac{t-a}{b-a}\right)^j \left(\frac{b-t}{b-a}\right)^i\\
+	&= B_{ij}(t)
+\end{align}
+b)
+\begin{align}
+	& \lambda_0(t) B_{i-1,j}(t) + \lambda_a(t) B_{i,j-1}(t)\\
+	&= \lambda_0(t) \frac{(q-1)!}{(i-1)!j!} \lambda_0^{i-1}(t) \lambda_1^{j}(t) + \lambda_0(t) \frac{(q-1)!}{i!(j-1)!} \lambda_0^{i}(t) \lambda_1^{j-1}(t)\\
+	&= \left(\frac{(q-1)!}{(i-1)!j!} +\frac{(q-1)!}{i!(j-1)!} \right) \lambda_0^i(t)\lambda_1^{j}(t) \\
+	&= \left(\frac{(q-1)!i}{i!j!} +\frac{(q-1)!j}{i!j!} \right)  \lambda_0^i(t)\lambda_1^{j}(t)\\
+	&= \left(\frac{(q-1)!(i+j)}{i!j!} \right) \lambda_0^i(t)\lambda_1^{j}(t)\\
+	&= B_{ij}(t)
+\end{align}
+c)
+\begin{align}
+	B_{ij} &= \frac{q!}{i!j!} \left(\frac{b-t}{b-a}\right)^i \left(\frac{t-a}{b-a}\right)^j \\
+	B'_{ij} &= \frac{q!}{i!j!} \left(\frac{-i(b-t)^{i-1}}{(b-a)^i} \frac{(t-a)^{j}}{(b-a)^j} + \frac{(b-t)^{i}}{(b-a)^i} \frac{j(t-a)^{j-1}}{(b-a)^j} \right)\\
+	&= \frac{(q-1)!\cdot q}{(b-a) i! j!} \left(\frac{-i(b-t)^{i-1}}{(b-a)^{i-1}} \frac{(t-a)^{j}}{(b-a)^j} + \frac{(b-t)^{i}}{(b-a)^i} \frac{j(t-a)^{j-1}}{(b-a)^{j-1}} \right)\\
+	&= \frac{q}{(b-a)} \left(\frac{(q-1)!}{i!j!}\frac{-i(b-t)^{i-1}}{(b-a)^{i-1}} \frac{(t-a)^{j}}{(b-a)^j} + \frac{(q-1)!}{i!j!}\frac{(b-t)^{i}}{(b-a)^i} \frac{j(t-a)^{j-1}}{(b-a)^{j-1}} \right)\\
+	&= \frac{q}{(b-a)} \left(\frac{(q-1)!}{i!(j-1)!}\frac{(b-t)^{i}}{(b-a)^i} \frac{(t-a)^{j-1}}{(b-a)^{j-1}} - \frac{(q-1)!}{(i-1)!j!}\frac{(b-t)^{i-1}}{(b-a)^{i-1}} \frac{(t-a)^{j}}{(b-a)^j}\right)\\
+	&= \frac{q}{(b-a)} \left( B_{i,j-1} - B_{i-1,j} \right) 
+\end{align}
