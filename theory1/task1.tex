@@ -1,0 +1,98 @@
+%!TEX root = main.tex
+
+\section{Aufgabe 1 Darstellungsformen}
+
+\subsection*{a)}
+
+
+\begin{equation}
+    {\bf P}_M(t) = a_0 + a_1 t + a_2 t^2
+\end{equation}
+
+Find ${\bf P}_M$ through inversion of the Vandermonde Matrix:
+
+\begin{equation}
+    \vect{1 & 0 & 0 \\ 1 & 1 & 1 \\ 1 & 2 & 4} \cdot \vect{a_0 \\ a_1 \\ a_2} = \vect{P_0 \\ P_1 \\ P_2}
+\end{equation}
+
+Inverting yields:
+
+\begin{equation}
+    \vect{1 & 0 & 0 \\ -3/2 & 2  & -1/2  \\ 1/2 & -1 & 1/2} \cdot \vect{P_0 \\ P_1 \\ P_2} = \vect{a_0 \\ a_1 \\ a_2} 
+    = \vect{P_0 \\ -3/2 P_0 - 1/2 P_2 + 2 P_1 \\ 1/2 P_0 - P_1 + 1/2 P_2}
+\end{equation}
+
+
+\begin{eqnarray}
+     {\bf P}_M(t) &=&  P_0  + \left( -3/2 P_0 - 1/2 P_2 + 2 P_1 \right) t + \left( 1/2 P_0 - P_1 + 1/2 P_2 \right) t^2 \\
+&=& \vect{0 \\0} + \vect{0.5 \\ 5.5 } t   + \vect{0.5 \\ - 2.5 } t^2 
+\end{eqnarray}
+
+
+TODO: KURVE AUSWERTEN
+
+\input{plot}
+
+
+\subsection*{b)}
+
+
+
+\begin{equation}
+    {\bf P}_L(t) = l_0(t) P_0 + l_1(t) P_1 + l_2 (t) P_2
+\end{equation}
+
+\begin{eqnarray}
+    l_0(t) &=& \frac{(t-1)(t-2)}{2} \\
+    l_1(t) &=& -t(t-2) \\
+    l_2(t) &=& \frac{(t-1)t}{2}
+\end{eqnarray}
+
+\begin{eqnarray}
+    {\bf P}_L(t) &=& \frac{(t-1)(t-2)}{2} P_0 - t(t-2) P_1 + \frac{(t-1)t}{2} P_2 \\
+    &=& \frac{t^2-t-2t+2}{2} P_0 - (t^2-2t) P_1 + \frac{(t^2-t}{2} P_2  \\
+    &=& P_0  + \left( -3/2 P_0 - 1/2 P_2 + 2 P_1 \right) t + \left( 1/2 P_0 - P_1 + 1/2 P_2 \right) t^2  = {\bf P}_M(t)
+\end{eqnarray}
+
+
+
+\subsection*{c)}
+
+
+\begin{equation}
+    {\bf P}_N(t) = \omega_0(t) \Delta(t_0)  +  \omega_1(t) \Delta(t_0, t_1) + \omega_2(t) \Delta(t_0, t_1, t_2)
+\end{equation}
+
+
+\begin{tabular}{ccc|ccc}
+  & \multirow{3}{*}{1} & 0& \vect{0\\0}& \multirow{3}{*}{\vect{1\\3}} &\\ 
+2 & \multirow{3}{*}{1} & 1& \vect{1\\3}& \multirow{3}{*}{\vect{2\\-2}} & \vect{0.5\\-2.5} \\ 
+  &                    & 2& \vect{3\\1}&  & \\ 
+\end{tabular}
+
+\begin{eqnarray}
+    {\bf P}_N(t) &=& 1 \cdot \vect{0 \\0}   +  ( t-0) \vect{1 \\ 3} + (t-0)(t-1) \vect{0.5 \\ -2.5 }\\
+    &=& \vect{0 \\0} + \vect{0.5 \\ 5.5 } t   + \vect{0.5 \\ - 2.5 } t^2  = {\bf P}_M(t)
+\end{eqnarray}
+
+
+\subsection*{d)}
+Bei der Monom Darstellung m\"ussten wir eine neue 4 x 4 Matrix invertieren, bei der Lagrange Darstellung m\"usste man alle $l_i$ neu berechnen. Nur bei der Newton-Darstellung kann man Berechnungen wiederverwenden:
+
+\begin{equation}
+    {\bf P}_N(t) = \omega_0(t) \Delta(t_0)  +  \omega_1(t) \Delta(t_0, t_1) + \omega_2(t) \Delta(t_0, t_1, t_2) + \omega_3(t) \Delta(t_0, t_1, t_2, t_3)
+\end{equation}
+
+
+\begin{tabular}{cccc|cccc}
+                  &   & \multirow{2}{*}{1} & 0& \vect{0\\0}& \multirow{3}{*}{\vect{1\\3}} & &\\ 
+\multirow{3}{*}{3}&2  & \multirow{3}{*}{1} & 1& \vect{1\\3}& \multirow{3}{*}{\vect{2\\-2}} & \vect{0.5\\-2.5} & \multirow{2}{*}{ \vect{ - 5/6 \\ 0.5}}\\ 
+                  &2  & \multirow{3}{*}{1} & 2& \vect{3\\1}& \multirow{3}{*}{\vect{0\\-2}} & \vect{-2\\-1} & \\ 
+                  &   &                    & 3& \vect{1\\1}&  &  & \\ 
+\end{tabular}
+
+\begin{eqnarray}
+    {\bf P}_N(t) &=& 1 \cdot \vect{0 \\0}   +  ( t-0) \vect{1 \\ 3} + (t-0)(t-1) \vect{0.5 \\ -2.5 } + (t-0)(t-1)(t-2) \vect{ - 5/6 \\ 0.5} \\
+    &=& \vect{0 \\0} + \vect{- 7/6 \\ 5.75 } t   + \vect{ -2  \\ - 4 } t^2  + \vect{ - 5/6 \\ 0.5} t^3 
+\end{eqnarray}
+
