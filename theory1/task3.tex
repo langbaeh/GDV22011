@@ -9,8 +9,8 @@ a)
 \end{align}
 b)
 \begin{align}
-	& \lambda_0(t) B_{i-1,j}(t) + \lambda_a(t) B_{i,j-1}(t)\\
-	&= \lambda_0(t) \frac{(q-1)!}{(i-1)!j!} \lambda_0^{i-1}(t) \lambda_1^{j}(t) + \lambda_0(t) \frac{(q-1)!}{i!(j-1)!} \lambda_0^{i}(t) \lambda_1^{j-1}(t)\\
+	& \lambda_0(t) B_{i-1,j}(t) + \lambda_1(t) B_{i,j-1}(t)\\
+	&= \lambda_0(t) \frac{(q-1)!}{(i-1)!j!} \lambda_0^{i-1}(t) \lambda_1^{j}(t) + \lambda_1(t) \frac{(q-1)!}{i!(j-1)!} \lambda_0^{i}(t) \lambda_1^{j-1}(t)\\
 	&= \left(\frac{(q-1)!}{(i-1)!j!} +\frac{(q-1)!}{i!(j-1)!} \right) \lambda_0^i(t)\lambda_1^{j}(t) \\
 	&= \left(\frac{(q-1)!i}{i!j!} +\frac{(q-1)!j}{i!j!} \right)  \lambda_0^i(t)\lambda_1^{j}(t)\\
 	&= \left(\frac{(q-1)!(i+j)}{i!j!} \right) \lambda_0^i(t)\lambda_1^{j}(t)\\
@@ -22,6 +22,6 @@ c)
 	B'_{ij} &= \frac{q!}{i!j!} \left(\frac{-i(b-t)^{i-1}}{(b-a)^i} \frac{(t-a)^{j}}{(b-a)^j} + \frac{(b-t)^{i}}{(b-a)^i} \frac{j(t-a)^{j-1}}{(b-a)^j} \right)\\
 	&= \frac{(q-1)!\cdot q}{(b-a) i! j!} \left(\frac{-i(b-t)^{i-1}}{(b-a)^{i-1}} \frac{(t-a)^{j}}{(b-a)^j} + \frac{(b-t)^{i}}{(b-a)^i} \frac{j(t-a)^{j-1}}{(b-a)^{j-1}} \right)\\
 	&= \frac{q}{(b-a)} \left(\frac{(q-1)!}{i!j!}\frac{-i(b-t)^{i-1}}{(b-a)^{i-1}} \frac{(t-a)^{j}}{(b-a)^j} + \frac{(q-1)!}{i!j!}\frac{(b-t)^{i}}{(b-a)^i} \frac{j(t-a)^{j-1}}{(b-a)^{j-1}} \right)\\
-	&= \frac{q}{(b-a)} \left(\frac{(q-1)!}{i!(j-1)!}\frac{(b-t)^{i}}{(b-a)^i} \frac{(t-a)^{j-1}}{(b-a)^{j-1}} - \frac{(q-1)!}{(i-1)!j!}\frac{(b-t)^{i-1}}{(b-a)^{i-1}} \frac{(t-a)^{j}}{(b-a)^j}\right)\\
+	&= \frac{q}{(b-a)} \left(- \frac{(q-1)!}{(i-1)!j!}\frac{(b-t)^{i-1}}{(b-a)^{i-1}} \frac{(t-a)^{j}}{(b-a)^j} + \frac{(q-1)!}{i!(j-1)!}\frac{(b-t)^{i}}{(b-a)^i} \frac{(t-a)^{j-1}}{(b-a)^{j-1}} \right)\\
 	&= \frac{q}{(b-a)} \left( B_{i,j-1} - B_{i-1,j} \right) 
 \end{align}
