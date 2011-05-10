@@ -28,8 +28,13 @@ Inverting yields:
 &=& \vect{0 \\0} + \vect{0.5 \\ 5.5 } t   + \vect{0.5 \\ - 2.5 } t^2 
 \end{eqnarray}
 
+\begin{eqnarray}
+    {\bf P}_M(0.5) &=& \vect{0.375 \\ 2.125} \\
+    {\bf P}_M(1.5) &=& \vect{1.875 \\ 2.625} \\
+    {\bf P}_M(-1) &=& \vect{0 \\ -8} \\
+    {\bf P}_M(3) &=& \vect{6 \\ -6} 
+\end{eqnarray}
 
-TODO: KURVE AUSWERTEN
 
 \input{plot}
 
@@ -86,13 +91,13 @@ Bei der Monom Darstellung m\"ussten wir eine neue 4 x 4 Matrix invertieren, bei 
 
 \begin{tabular}{cccc|cccc}
                   &   & \multirow{2}{*}{1} & 0& \vect{0\\0}& \multirow{3}{*}{\vect{1\\3}} & &\\ 
-\multirow{3}{*}{3}&2  & \multirow{3}{*}{1} & 1& \vect{1\\3}& \multirow{3}{*}{\vect{2\\-2}} & \vect{0.5\\-2.5} & \multirow{2}{*}{ \vect{ - 5/6 \\ 0.5}}\\ 
-                  &2  & \multirow{3}{*}{1} & 2& \vect{3\\1}& \multirow{3}{*}{\vect{0\\-2}} & \vect{-2\\-1} & \\ 
+\multirow{3}{*}{3}&2  & \multirow{3}{*}{1} & 1& \vect{1\\3}& \multirow{3}{*}{\vect{2\\-2}} & \vect{0.5\\-2.5} & \multirow{2}{*}{ \vect{ - 5/6 \\ 7 / 6}}\\ 
+                  &2  & \multirow{3}{*}{1} & 2& \vect{3\\1}& \multirow{3}{*}{\vect{0\\-2}} & \vect{-2\\1} & \\ 
                   &   &                    & 3& \vect{1\\1}&  &  & \\ 
 \end{tabular}
 
 \begin{eqnarray}
-    {\bf P}_N(t) &=& 1 \cdot \vect{0 \\0}   +  ( t-0) \vect{1 \\ 3} + (t-0)(t-1) \vect{0.5 \\ -2.5 } + (t-0)(t-1)(t-2) \vect{ - 5/6 \\ 0.5} \\
-    &=& \vect{0 \\0} + \vect{- 7/6 \\ 5.75 } t   + \vect{ -2  \\ - 4 } t^2  + \vect{ - 5/6 \\ 0.5} t^3 
+    {\bf P}_N(t) &=& 1 \cdot \vect{0 \\0}   +  ( t-0) \vect{1 \\ 3} + (t-0)(t-1) \vect{0.5 \\ -2.5 } + (t-0)(t-1)(t-2) \vect{ - 5/6 \\ 7/6} \\
+    &=& \vect{0 \\0} + \vect{- 7/6 \\ 47/6 } t   + \vect{ -2  \\ - 10 } t^2  + \vect{ - 5/6 \\ 7/6} t^3 
 \end{eqnarray}
 
