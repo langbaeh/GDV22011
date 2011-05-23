@@ -1,0 +1,69 @@
+%!TEX root = main.tex
+
+\section*{Aufgabe 1 Bezier-Kurven und Hermite-Interpolation}
+
+\subsection*{a)}
+
+\begin{eqnarray}
+    P_0' &=& \frac{3!}{(3-1)!} \left( - {\bf b}_{30} + {\bf b}_{21} \right)\\
+    P_0' &=& 3 \left( - {\bf b}_{30} + {\bf b}_{21} \right)\\
+    P_0'+3{\bf b}_{30} &=& 3 {\bf b}_{21} \\
+    1/3 P_0'+{\bf b}_{30} &=& {\bf b}_{21} 
+\end{eqnarray}
+
+\begin{eqnarray}
+    P_1' &=& \frac{3!}{(3-1)!} \left( - {\bf b}_{03} + {\bf b}_{12} \right)\\
+    P_1' &=& 3 \left( - {\bf b}_{03} + {\bf b}_{12} \right)\\
+    P_1'+3{\bf b}_{03} &=& 3 {\bf b}_{12} \\
+    1/3 P_1'+{\bf b}_{03} &=& {\bf b}_{12} 
+\end{eqnarray}
+
+
+
+\begin{eqnarray}
+    {\bf b}_{30}&=&P_0\\
+    {\bf b}_{21}&=&1/3 P_0' + P_0\\
+    {\bf b}_{12}&=&1/3 P_1' + P_1\\
+    {\bf b}_{03}&=&P_1
+\end{eqnarray}
+
+$P(t) = B_{30}(t)P_0 + B_{21}(t)(1/3 P_0' + P_0) + B_{12}(t)(1/3 P_1' + P_1) + P_1 B_{03}(t)$
+
+
+\subsection*{b)}
+\begin{eqnarray}
+    H^3_0 &=& B_{30}(t) +B_{21}(t) \\
+    H^3_1 &=& 1/3 B_{21}(t)\\
+    H^3_2 &=& 1/3 B_{12}(t)\\
+    H^3_3 &=& B_{03}(t) +B_{12}(t) \\
+\end{eqnarray}
+
+\subsection*{c)}
+
+\begin{eqnarray}
+    P(t)&=& a_0 + a_1 t + a_2 t^2 + a_3 t^3\\
+    P'(t)&=& a_1 + 2 a_2 t  + 3 a_3 t^2
+\end{eqnarray}
+
+\begin{eqnarray}
+    {\bf b}_{30}&=&a_0\\
+    {\bf b}_{21}&=&a_0+ 1/3 a_1\\ \nonumber
+    {\bf b}_{12}&=&1/3 (a_1 + 2 a_2 + 3 a_3 ) + a_0 + a_1 + a_2 + a_3 \\
+    &=& a_0 + 4/3 a_1 + 5/3 a_2 + 2 a_3 \\
+    {\bf b}_{03}&=&a_0 + a_1 + a_2 + a_3
+\end{eqnarray}
+
+f\"ur $P(t) = 3t - \frac{9}{2} t^2 + \frac{7}{4} t^3$:
+
+\begin{eqnarray}
+    {\bf b}_{30}&=&0\\
+    {\bf b}_{21}&=&1 \\
+    {\bf b}_{12}&=& 4 - 15/2 + 7/2 = -7 \\
+    {\bf b}_{03}&=& 3 - 9/2 + 7/4 = 1/4
+\end{eqnarray}
+
+
+
+
+
+
