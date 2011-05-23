@@ -1,0 +1,61 @@
+%!TEX root = main.tex
+
+\section*{Aufgabe 1 Bezier-Kurven und Hermite-Interpolation}
+
+\subsection*{a)}
+Eine Bezierkurve von Grad 2 hat 3 Kontrollpunke und 3 Bernstein-Polynome:
+\begin{eqnarray}
+    B_{20}&=& \frac{2!}{2!}\left(1-t \right)^2 = \left(1-t \right)^2\\
+    B_{11}&=& \frac{2!}{1!1!}\left(1-t \right)t = 2 \left(1-t \right)t  \\
+    B_{02}&=& \frac{2!}{2!} t^2 = t^2  
+\end{eqnarray}
+
+
+
+
+\subsection*{b)}
+
+$\mathbf{d}_k = \sum_{i+j=q} B_{ij}(t_k) \mathbf{b}_{ij}$
+
+$\vect{ \vect{0 \\ 0 } \\ \vect{4 \\ 4 } \\ \vect{8 \\ 2 } \\ \vect{12 \\ 0 }} = 
+\left( \begin{matrix} 
+    B_{20}(0) & B_{11}(0) &B_{02}(0) \\
+    B_{20}(1/3) & B_{11}(1/3) &B_{02}(1/3) \\
+    B_{20}(2/3) & B_{11}(2/3) &B_{02}(2/3) \\
+    B_{20}(1) & B_{11}(1) &B_{02}(1) \\
+\end{matrix} \right)  \vect{ \mathbf{b}_{20} \\ \mathbf{b}_{11} \\ \mathbf{b}_{02} }$
+
+
+$\vect{ \vect{0 \\ 0 } \\ \vect{4 \\ 4 } \\ \vect{8 \\ 2 } \\ \vect{12 \\ 0 }} = 
+\left( \begin{matrix} 
+    1 & 2 &0 \\
+    4/9 & 4/9 &1/9 \\
+    1/9 & 4/9 & 4/9 \\
+    0 & 2 &1  \\
+\end{matrix} \right)  \vect{ \mathbf{b}_{20} \\ \mathbf{b}_{11} \\ \mathbf{b}_{02} }$
+
+
+keine lust zu rechnen, wahrscheinlich wiedersprichen sich hier irgendwelche punkte
+
+\subsection*{c)}
+$\mathbf{B} ^* = \mathbf{B}^T \mathbf{B} =  \left( \begin{matrix} 
+    1 & 2 &0 \\
+    4/9 & 4/9 &1/9 \\
+    1/9 & 4/9 & 4/9 \\
+    0 & 2 &1  \\
+\end{matrix} \right) ^T     \left( \begin{matrix} 
+        1 & 2 &0 \\
+        4/9 & 4/9 &1/9 \\
+        1/9 & 4/9 & 4/9 \\
+        0 & 2 &1  \\
+    \end{matrix} \right) =     1/81\left( \begin{matrix} 
+            98 & 182 &8 \\
+            182 & 680 &182 \\
+            8 & 182 & 98 \\
+        \end{matrix} \right) $ 
+        
+$\mathbf{d}^* = B^T \mathbf{d} = \vect{ \vect{8/3 \\ 2 } \\ \vect{ 88/3 \\ 8/3} \\ \vect{16 \\ 4/3 }} $
+
+$b = \left(\mathbf{B*} \right)^{-1} \mathbf{d^*} = \vect{ \vect{8 \\ 93/10  } \\ \vect{ -4  \\ -9/2} \\ \vect{20 \\ 87/10 }} $
+
+
