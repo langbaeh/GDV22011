@@ -38,6 +38,7 @@ void printShaderInfoLog(GLuint obj)
 
 int readShaders(char* vertexShaderPath, char* fragmentShaderPath)
 {
+  //  std::cerr << vertexShaderPath << std::endl;
 	// read vertex shader if possible
 	std::ifstream vin(vertexShaderPath, std::ifstream::in | std::ios::binary);
 	vin.seekg(0, std::ios::end);

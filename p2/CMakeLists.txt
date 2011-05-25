@@ -9,11 +9,11 @@ configure_file (
   "${PROJECT_SOURCE_DIR}/config.h"
   )
   
-SOURCE_GROUP(Shaders FILES PNShader.vert PNShader.frag)
+SOURCE_GROUP(Shaders FILES PNShader.vert PNShader.frag PNShaderCast.vert PNShaderVlacho.vert )
 
 include_directories( ${PROJECT_SOURCE_DIR})
 
-add_executable(main main.cpp main.h Vec3.h TriangleMesh.h TriangleMesh.cpp PNTriangles.h PNTriangles.cpp  PNShader.vert PNShader.frag)
+add_executable(main main.cpp main.h Vec3.h TriangleMesh.h TriangleMesh.cpp PNTriangles.h PNTriangles.cpp PNShaderCast.vert PNShader.vert PNShader.frag PNShaderVlacho.vert )
 
 IF (WIN32)
   set(GLEW_LIBRARY GLEW32)

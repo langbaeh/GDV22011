@@ -161,16 +161,18 @@ void keyPressed(unsigned char key, int x, int y) {
     break;
   case '1':
     ret = pntriangles.changeShaders((char*)VERTEXSHADERPATH, (char*)FRAGMENTSHADERPATH);
-    std::cerr << key << std::endl;
-    std::cerr << ret << std::endl;
     break;
   case '2':
      ret = pntriangles.changeShaders((char*)"/gris/gris-f/homestud/skoch/workspace/uni/GDV22011/p2/PNShaderCast.vert", (char*) FRAGMENTSHADERPATH);
     if (ret == 0){
       pntriangles.changeShaders((char*)VERTEXSHADERPATH, (char*)FRAGMENTSHADERPATH);
     }
-    std::cerr << key << std::endl;
-    std::cerr << ret << std::endl;
+    break;
+  case '3':
+     ret = pntriangles.changeShaders((char*)"/gris/gris-f/homestud/skoch/workspace/uni/GDV22011/p2/PNShaderVlacho.vert", (char*) FRAGMENTSHADERPATH);
+    if (ret == 0){
+      pntriangles.changeShaders((char*)VERTEXSHADERPATH, (char*)FRAGMENTSHADERPATH);
+    }
     break;
   }
   glutPostRedisplay();
