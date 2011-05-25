@@ -71,16 +71,9 @@ void main()
 	vec3 pos = phi.x*b100 + phi.y*b010 + phi.z*b001;
 
 	// "Normalenmodell" 
-//	vec3 n110 = normalize(n0 + n1);
-//	vec3 n101 = normalize(n0 + n2);
-//	vec3 n011 = normalize(n1 + n2);
 
 	vec3 w = (b001-b100);
 	vec3 z = (b010-b100);
-
-//	vec3 n100 = phi.x*n0   + phi.y*n110 + phi.z*n101;
-//	vec3 n010 = phi.x*n110 + phi.y*n1   + phi.z*n011;
-//	vec3 n001 = phi.x*n101 + phi.y*n011 + phi.z*n2;
 
 
 	Normal = normalize(cross(z,w));

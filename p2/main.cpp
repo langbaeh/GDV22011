@@ -51,7 +51,8 @@ int main(int argc, char **argv) {
   initialize();
 
   std::cout << "P(oint)N(ormal) Triangle demonstration (using vertex / fragment shaders)\n";
-  std::cout << "Usage:\nesc: exit program\n  -: decrease LOD\n  +: increase LOD \n  x: toggle standard / PN-Triangle rendering\n\n";
+  std::cout << "Usage:\nesc: exit program\n  -: decrease LOD\n  +: increase LOD \n  x: toggle standard / PN-Triangle rendering\n";
+  std::cout << "1: default shaders\n 2: casteljau shaders \n 3: vlachos shaders\n\n";
   std::cout << "mouse left: rotate\nmouse middle: move (pan)\nmouse right: zoom" << std::endl;
 
   glutMainLoop();
@@ -136,27 +137,41 @@ void renderScene(void) {
 // Callbacks
 
 void keyPressed(unsigned char key, int x, int y) {
+  int ret = 0;
   switch (key) {
     // esc => exit
-    case 27:
-      exit(0);
-      break;
+  case 27:
+    exit(0);
+    break;
     // v => reset view
-    case 'v':
-    case 'V':
-      camPos.set(0.0f, 2.0f, -10.0f);
-      camAngleX = 180.0f;
-      camAngleY = 0.0f;
-      break;
-	case '+':
-      pntriangles.increaseDepth();
-	  break;
-	case '-':
-	  pntriangles.decreaseDepth();
-	  break;
-	case 'x':
-	  showPN = !showPN;
-	  break;
+  case 'v':
+  case 'V':
+    camPos.set(0.0f, 2.0f, -10.0f);
+  camAngleX = 180.0f;
+  camAngleY = 0.0f;
+  break;
+  case '+':
+    pntriangles.increaseDepth();
+    break;
+  case '-':
+    pntriangles.decreaseDepth();
+    break;
+  case 'x':
+    showPN = !showPN;
+    break;
+  case '1':
+    ret = pntriangles.changeShaders((char*)VERTEXSHADERPATH, (char*)FRAGMENTSHADERPATH);
+    std::cerr << key << std::endl;
+    std::cerr << ret << std::endl;
+    break;
+  case '2':
+     ret = pntriangles.changeShaders((char*)"/gris/gris-f/homestud/skoch/workspace/uni/GDV22011/p2/PNShaderCast.vert", (char*) FRAGMENTSHADERPATH);
+    if (ret == 0){
+      pntriangles.changeShaders((char*)VERTEXSHADERPATH, (char*)FRAGMENTSHADERPATH);
+    }
+    std::cerr << key << std::endl;
+    std::cerr << ret << std::endl;
+    break;
   }
   glutPostRedisplay();
 }

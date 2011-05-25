@@ -36,10 +36,10 @@ void printShaderInfoLog(GLuint obj)
 	}
 }
 
-int readShaders()
+int readShaders(char* vertexShaderPath, char* fragmentShaderPath)
 {
 	// read vertex shader if possible
-	std::ifstream vin(VERTEXSHADERPATH, std::ifstream::in | std::ios::binary);
+	std::ifstream vin(vertexShaderPath, std::ifstream::in | std::ios::binary);
 	vin.seekg(0, std::ios::end);
 	int lengthV = vin.tellg();
 	vin.seekg(0, std::ios::beg);
@@ -50,7 +50,7 @@ int readShaders()
 	vsource[lengthV] = 0; // terminate char array
 
 	// read fragment shader if possible
-	std::ifstream fin(FRAGMENTSHADERPATH, std::ifstream::in | std::ios::binary);
+	std::ifstream fin(fragmentShaderPath, std::ifstream::in | std::ios::binary);
 	fin.seekg(0, std::ios::end);
 	int lengthF = fin.tellg();
 	fin.seekg(0, std::ios::beg);
@@ -130,29 +130,33 @@ void PNTriangles::regularPatch(int level)
   }
 }
 
+int PNTriangles::changeShaders(char* vertexShaderPath, char* fragmentShaderPath){
+  programID = readShaders(vertexShaderPath, fragmentShaderPath);
+  return programID;
+}
 
 void PNTriangles::init()
 {
-	// initialize shader programs
-	programID = readShaders();
-	// build pre-tesselated display lists
-	for (int i = 0; i < maxdepth; ++i)
-	{
-		DLids[i] = glGenLists(1);
-
-		glNewList(DLids[i], GL_COMPILE);
-		glBegin(GL_TRIANGLES);
-		regularPatch(i+1);
-		glEnd();
-		glEndList();
-
-	}
-
+  // initialize shader programs
+  programID = readShaders((char*)VERTEXSHADERPATH, (char*)FRAGMENTSHADERPATH);
+  // build pre-tesselated display lists
+  for (int i = 0; i < maxdepth; ++i)
+    {
+      DLids[i] = glGenLists(1);
+      
+      glNewList(DLids[i], GL_COMPILE);
+      glBegin(GL_TRIANGLES);
+      regularPatch(i+1);
+      glEnd();
+      glEndList();
+      
+    }
+  
 }
 
 void PNTriangles::draw()
 {
-
+  std:: cerr<< "drawing " << programID << std::endl;
 	glUseProgram(programID);
 
 	Triangles::iterator it = triangles.begin();

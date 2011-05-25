@@ -40,6 +40,8 @@ public:
   void decreaseDepth() { if (depth >0) --depth; }
   void increaseDepth() { if (depth < maxdepth-1) ++depth; }
 
+  int changeShaders(char* vertexShaderPath, char* fragmentShaderPath);
+
   void setMesh(Vertices &verts, Normals &norms, Triangles &tris);
 
   int depth;
