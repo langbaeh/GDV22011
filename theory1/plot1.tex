@@ -6,11 +6,14 @@
 \psset{xAxisLabel={x},
        yAxisLabel={y},
        labelFontSize=\displaystyle,
-       xticksize=0 5,
+       xticksize=-5 5,
        yticksize=0 5,
-       ticklinestyle=dashed,
-       algebraic}
-\begin{psgraph}[Ox=-2,Oy=-2, Dy=1,dy=1,dx=1,Dx=1]{->}(0,0)(6,6){5cm}{5cm}	
+       ticklinestyle=dashed
+	}
+\begin{psgraph}[Ox=0, Oy=0, Dy=1,dy=1,dx=1,Dx=1]{->}(0,0)(0,-8)(8,8){5cm}{10cm}
 \end{psgraph}
 
 \end{centering}
+
+%      \psaxes[labels=none,Ox=1,subticks=5,ticksize=0pt -4pt](3,5)(1,0)(3,5)
+
