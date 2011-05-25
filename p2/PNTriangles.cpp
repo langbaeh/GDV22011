@@ -156,7 +156,7 @@ void PNTriangles::init()
 
 void PNTriangles::draw()
 {
-  std:: cerr<< "drawing " << programID << std::endl;
+  //  std:: cerr<< "drawing " << programID << std::endl;
 	glUseProgram(programID);
 
 	Triangles::iterator it = triangles.begin();
