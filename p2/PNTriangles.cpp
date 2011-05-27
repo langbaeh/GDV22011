@@ -101,6 +101,7 @@ void PNTriangles::addVertex(int u, int v, int w, int q)
 {
   glMultiTexCoord3f(6,(float)u/q, (float)v/q,(float)w/q);
   glVertex3f((float)u/q, (float)v/q, (float)w/q);
+  tessels.push_back(Tessel((float)u/q, (float)v/q,(float)w/q));
 }
 
 void PNTriangles::regularPatch(int level)
@@ -162,9 +163,10 @@ void PNTriangles::draw()
 	GLuint VertexVBOID;
 	glGenBuffers(1, &VertexVBOID);
 	glBindBuffer(GL_ARRAY_BUFFER, VertexVBOID);
-	//	GLuint IndexVBOID;
-	//glGenBuffers(1, &IndexVBOID);
-	//glBindBuffer(GL_ARRAY_BUFFER, IndexVBOID);
+
+	GLuint TesselVBOID;
+	glGenBuffers(1, &TesselVBOID);
+	glBindBuffer(GL_ARRAY_BUFFER, TesselVBOID);
 
 	PNVertex pvertices[triangles.size()*3];
 	//	ushort pindices[triangles.size()*3];
@@ -229,6 +231,7 @@ void PNTriangles::draw()
 	int sizeVertexBuf = sizeof(PNVertex)*numT;
 	glBufferData(GL_ARRAY_BUFFER, sizeVertexBuf, &pvertices[0].x0, GL_STATIC_DRAW);
 
+
 	//	int sizeIndexBuf = sizeof(ushort)*numT;
 	//glBufferData(GL_ARRAY_BUFFER, sizeIndexBuf, pindices, GL_STATIC_DRAW);
 
@@ -237,14 +240,15 @@ void PNTriangles::draw()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(PNVertex), BUFFER_OFFSET(0));
 	glEnableVertexAttribArray(1); // submit normals on stream 1
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(PNVertex), BUFFER_OFFSET(12));
-	glEnableVertexAttribArray(2); // submit normals on stream 1
+	glEnableVertexAttribArray(2); // submit normals on stream 2
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(PNVertex), BUFFER_OFFSET(24));
-	glEnableVertexAttribArray(3); // submit normals on stream 1
+	glEnableVertexAttribArray(3); // submit normals on stream 3
 	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(PNVertex), BUFFER_OFFSET(36));
-	glEnableVertexAttribArray(4); // submit normals on stream 1
+	glEnableVertexAttribArray(4); // submit normals on stream 4
 	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(PNVertex), BUFFER_OFFSET(48));
-	glEnableVertexAttribArray(5); // submit normals on stream 1
+	glEnableVertexAttribArray(5); // submit normals on stream 5
 	glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(PNVertex), BUFFER_OFFSET(60));
+
 
 	glBindAttribLocation(programID, 0, "p0");
 	glBindAttribLocation(programID, 1, "p1");
@@ -253,9 +257,20 @@ void PNTriangles::draw()
 	glBindAttribLocation(programID, 4, "n1");
 	glBindAttribLocation(programID, 5, "n2");
 
+
 	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndexVBOID);
 	glDrawArrays(GL_TRIANGLES, 0, numT);
 
+	int sizeTesselBuf = sizeof(Tessel)*tessels.size();
+	glBufferData(GL_ARRAY_BUFFER, sizeTesselBuf, &tessels[0], GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, TesselVBOID);
+
+	glEnableVertexAttribArray(6);
+	glVertexAttribPointer(6, 3, GL_FLOAT, GL_FALSE, sizeof(Tessel), BUFFER_OFFSET(0) );
+	glVertexAttribDivisor(6, 1);
+	glBindAttribLocation(programID, 6, "phi");	
+	
+	glDrawArraysInstanced(GL_TRIANGLES,0, numT, tessels.size());
 
 	glUseProgram(0);
 
