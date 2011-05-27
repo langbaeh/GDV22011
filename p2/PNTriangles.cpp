@@ -159,8 +159,18 @@ void PNTriangles::draw()
 {
   //  std:: cerr<< "drawing " << programID << std::endl;
 	glUseProgram(programID);
+	GLuint VertexVBOID;
+	glGenBuffers(1, &VertexVBOID);
+	glBindBuffer(GL_ARRAY_BUFFER, VertexVBOID);
+	//	GLuint IndexVBOID;
+	//glGenBuffers(1, &IndexVBOID);
+	//glBindBuffer(GL_ARRAY_BUFFER, IndexVBOID);
+
+	PNVertex pvertices[triangles.size()*3];
+	//	ushort pindices[triangles.size()*3];
 
 	Triangles::iterator it = triangles.begin();
+	int i =0;
 	while (it != triangles.end())
 	{
 
@@ -173,24 +183,90 @@ void PNTriangles::draw()
 		Vec3f &n2 = normals[(*it).z];
 		++it;
 
-		glMultiTexCoord3fv(0,&p0[0]);
-		glMultiTexCoord3fv(1,&p1[0]);
-		glMultiTexCoord3fv(2,&p2[0]);
+		// insert triangles into VBO
+		pvertices[i*3].x0 = p0[0];
+		pvertices[i*3].y0 = p0[1];
+		pvertices[i*3].z0 = p0[2];
 
-		glMultiTexCoord3fv(3,&n0[0]);
-		glMultiTexCoord3fv(4,&n1[0]);
-		glMultiTexCoord3fv(5,&n2[0]);
+		pvertices[i*3].nx0 = n0[0];
+		pvertices[i*3].ny0 = n0[1];
+		pvertices[i*3].nz0 = n0[2];
 
-		glCallList(DLids[depth]);
+		pvertices[i*3+1].x1 = p1[0];
+		pvertices[i*3+1].y1 = p1[1];
+		pvertices[i*3+1].z1 = p1[2];
 
+		pvertices[i*3+1].nx1 = n1[0];
+		pvertices[i*3+1].ny1 = n1[1];
+		pvertices[i*3+1].nz1 = n1[2];
+
+		pvertices[i*3+2].x2 = p2[0];
+		pvertices[i*3+2].y2 = p2[1];
+		pvertices[i*3+2].z2 = p2[2];
+
+		pvertices[i*3+2].nx2 = n2[0];
+		pvertices[i*3+2].ny2 = n2[1];
+		pvertices[i*3+2].nz2 = n2[2];
+		
+		//pindices[i*3] = i*3;
+		//pindices[i*3+1] = i*3+1;
+		//pindices[i*3+2] = i*3+2;
+
+		
+		++i;
+		//		glMultiTexCoord3fv(0,&p0[0]);
+		//		glMultiTexCoord3fv(1,&p1[0]);
+		//		glMultiTexCoord3fv(2,&p2[0]);
+
+		//		glMultiTexCoord3fv(3,&n0[0]);
+		// glMultiTexCoord3fv(4,&n1[0]);
+		//		glMultiTexCoord3fv(5,&n2[0]);
+
+		//		glCallList(DLids[depth]);
+		
 	}
+	int numT = triangles.size()*3;
+	int sizeVertexBuf = sizeof(PNVertex)*numT;
+	glBufferData(GL_ARRAY_BUFFER, sizeVertexBuf, &pvertices[0].x0, GL_STATIC_DRAW);
+
+	//	int sizeIndexBuf = sizeof(ushort)*numT;
+	//glBufferData(GL_ARRAY_BUFFER, sizeIndexBuf, pindices, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VertexVBOID);
+	glEnableVertexAttribArray(0); // submit positions on stream 0
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(PNVertex), BUFFER_OFFSET(0));
+	glEnableVertexAttribArray(1); // submit normals on stream 1
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(PNVertex), BUFFER_OFFSET(12));
+	glEnableVertexAttribArray(2); // submit normals on stream 1
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(PNVertex), BUFFER_OFFSET(24));
+	glEnableVertexAttribArray(3); // submit normals on stream 1
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(PNVertex), BUFFER_OFFSET(36));
+	glEnableVertexAttribArray(4); // submit normals on stream 1
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(PNVertex), BUFFER_OFFSET(48));
+	glEnableVertexAttribArray(5); // submit normals on stream 1
+	glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(PNVertex), BUFFER_OFFSET(60));
+
+	glBindAttribLocation(programID, 0, "p0");
+	glBindAttribLocation(programID, 1, "p1");
+	glBindAttribLocation(programID, 2, "p2");
+	glBindAttribLocation(programID, 3, "n0");
+	glBindAttribLocation(programID, 4, "n1");
+	glBindAttribLocation(programID, 5, "n2");
+
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndexVBOID);
+	glDrawArrays(GL_TRIANGLES, 0, numT);
+
 
 	glUseProgram(0);
 
+
+	//	glDisableVertexAttribArray(0);
+	//glDisableVertexAttribArray(1);
+
 	// draw domain subdiv triangle
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glCallList(DLids[depth]);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//	glCallList(DLids[depth]);
+	//	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 }
 

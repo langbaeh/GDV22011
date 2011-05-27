@@ -1,5 +1,6 @@
-varying vec3 Normal;
-varying vec3 viewDir;
+#version 130
+in vec3 Normal;
+in vec3 viewDir;
 
 void main()
 {

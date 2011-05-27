@@ -17,7 +17,20 @@
 #include "config.h"
 
 
+#define BUFFER_OFFSET(i) ((char *)NULL +(i))
+
 class PNTriangles {
+
+  struct PNVertex
+  {
+    float x0,y0,z0;
+    float x1,y1,z1;
+    float x2,y2,z2;
+    float nx0, ny0, nz0;
+    float nx1, ny1, nz1;
+    float nx2, ny2, nz2;
+  };
+  
 
   typedef Vec3f Vertex;
   typedef Vec3f Normal;
