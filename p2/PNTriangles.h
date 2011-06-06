@@ -17,7 +17,7 @@
 #include "config.h"
 
 
-#define BUFFER_OFFSET(i) ((char *)NULL +(i))
+#define BUFFER_OFFSET(i) ((void *)NULL +(i))
 
 class PNTriangles {
 
@@ -34,11 +34,14 @@ class PNTriangles {
 
   typedef Vec3f Vertex;
   typedef Vec3f Normal;
+  typedef Vec3f Tessel;
   typedef Vec3i Triangle;
 
   typedef std::vector<Triangle> Triangles;
   typedef std::vector<Normal> Normals;
   typedef std::vector<Vertex> Vertices;
+  typedef std::vector<Tessel> Tessels;
+
 
   void addVertex(int u, int v, int w, int q);
   void regularPatch(int level);
@@ -59,12 +62,12 @@ public:
 
   int depth;
   const static int maxdepth = 10;
-  GLuint DLids[maxdepth];
+  //  GLuint DLids[maxdepth];
 
   Vertices vertices;
   Normals normals;
   Triangles triangles;
-
+  Tessels tessels[maxdepth];
 };
 
 

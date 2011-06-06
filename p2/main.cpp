@@ -36,6 +36,9 @@ bool showPN = true;
 int main(int argc, char **argv) {
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+  //  glutInitContextVersion(3,3);
+
+
   glutInitWindowPosition(200,200);
   glutInitWindowSize(wSizeH,wSizeW);
   glutCreateWindow("PN Triangles");
@@ -54,6 +57,11 @@ int main(int argc, char **argv) {
   std::cout << "Usage:\nesc: exit program\n  -: decrease LOD\n  +: increase LOD \n  x: toggle standard / PN-Triangle rendering\n";
   std::cout << "1: default shaders\n 2: casteljau shaders \n 3: vlachos shaders\n\n";
   std::cout << "mouse left: rotate\nmouse middle: move (pan)\nmouse right: zoom" << std::endl;
+
+
+  if(GLEW_VERSION_3_3){
+    std::cerr << "version 3 3 here " << std::endl;
+  }
 
   glutMainLoop();
   
@@ -80,8 +88,10 @@ void initialize() {
   glEnable(GL_LIGHT0);
 
   // load a triangle mesh 
-  //  std::ifstream vin(MESHPATH);  
-  mesh.load(std::cin);
+  //    std::ifstream vin("../models/bunny.off");  
+    mesh.load(std::cin);
+  //mesh.load(vin);
+
   pntriangles.init();
   pntriangles.setMesh(mesh.vertices, mesh.normals, mesh.triangles); 
   std::cerr << "Read " << mesh.vertices.size() << " vertices " << std::endl;
