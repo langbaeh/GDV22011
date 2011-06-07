@@ -79,9 +79,6 @@ void main()
 	
 	
 	gl_Position =  gl_ModelViewProjectionMatrix * vec4(pos,1.0);
-	gl_Position =  gl_ModelViewProjectionMatrix * vec4(p0,1.0);
 
-//	gl_Position =  gl_ModelViewProjectionMatrix * gl_Vertex;
-//	gl_Position =  vec4(phi,1.0);
 
 }
