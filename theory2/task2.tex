@@ -1,6 +1,6 @@
 %!TEX root = main.tex
 
-\section*{Aufgabe 1 Bezier-Kurven und Hermite-Interpolation}
+\section*{Aufgabe 2 Approximation mit Bernstein-Polynomen}
 
 \subsection*{a)}
 Eine Bezierkurve von Grad 2 hat 3 Kontrollpunke und 3 Bernstein-Polynome:
@@ -34,8 +34,7 @@ $\vect{ \vect{0 \\ 0 } \\ \vect{4 \\ 4 } \\ \vect{8 \\ 2 } \\ \vect{12 \\ 0 }} =
     0 & 2 &1  \\
 \end{matrix} \right)  \vect{ \mathbf{b}_{20} \\ \mathbf{b}_{11} \\ \mathbf{b}_{02} }$
 
-
-keine lust zu rechnen, wahrscheinlich wiedersprichen sich hier irgendwelche punkte
+Dies ist ein \"uberbestimmtes Gleichungssystem und es l\"asst sich nicht l\"osen, da die Zeilenvektoren alle linear unabh\"angig voneinander sind.
 
 \subsection*{c)}
 $\mathbf{B} ^* = \mathbf{B}^T \mathbf{B} =  \left( \begin{matrix} 
@@ -56,6 +55,7 @@ $\mathbf{B} ^* = \mathbf{B}^T \mathbf{B} =  \left( \begin{matrix}
         
 $\mathbf{d}^* = B^T \mathbf{d} = \vect{ \vect{8/3 \\ 2 } \\ \vect{ 88/3 \\ 8/3} \\ \vect{16 \\ 4/3 }} $
 
-$b = \left(\mathbf{B*} \right)^{-1} \mathbf{d^*} = \vect{ \vect{8 \\ 93/10  } \\ \vect{ -4  \\ -9/2} \\ \vect{20 \\ 87/10 }} $
+$b = \left(\mathbf{B*} \right)^{-1} \mathbf{d^*} = \vect{ \vect{8 \\ 9.3  } \\ \vect{ -4  \\ -4.5} \\ \vect{20 \\ 8.7 }} $
 
-
+\input{plot2}
+\vspace{25pt}
