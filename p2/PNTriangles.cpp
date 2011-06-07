@@ -102,7 +102,12 @@ void PNTriangles::addVertex(int u, int v, int w, int q)
 {
   //  glMultiTexCoord3f(6,(float)u/q, (float)v/q,(float)w/q);
   // glVertex3f((float)u/q, (float)v/q, (float)w/q);
-  tessels[q-1].push_back(Tessel((float)u/q, (float)v/q,(float)w/q));
+  Tessel t;
+  t.x = (float)u/q;
+  t.y = (float)v/q;
+  t.z = (float)w/q;
+
+  tessels[q-1].push_back(t);
   //      std::cerr << (float)u/q << ", " << (float)v/q<< ", " <<(float)w/q << std::endl;
 }
 
@@ -170,7 +175,7 @@ void PNTriangles::draw()
 	glGenBuffers(1, &TesselVBOID);
 	//	glBindBuffer(GL_ARRAY_BUFFER, TesselVBOID);
 
-	PNVertex pvertices[triangles.size()*3];
+	PNVertex pvertices[triangles.size()];
 	//	ushort pindices[triangles.size()*3];
 
 	Triangles::iterator it = triangles.begin();
@@ -188,29 +193,29 @@ void PNTriangles::draw()
 		++it;
 
 		// insert triangles into VBO
-		pvertices[i*3].x0 = p0[0];
-		pvertices[i*3].y0 = p0[1];
-		pvertices[i*3].z0 = p0[2];
+		pvertices[i].x0 = p0[0];
+		pvertices[i].y0 = p0[1];
+		pvertices[i].z0 = p0[2];
 
-		pvertices[i*3].nx0 = n0[0];
-		pvertices[i*3].ny0 = n0[1];
-		pvertices[i*3].nz0 = n0[2];
+		pvertices[i].nx0 = n0[0];
+		pvertices[i].ny0 = n0[1];
+		pvertices[i].nz0 = n0[2];
 
-		pvertices[i*3+1].x1 = p1[0];
-		pvertices[i*3+1].y1 = p1[1];
-		pvertices[i*3+1].z1 = p1[2];
+		pvertices[i].x1 = p1[0];
+		pvertices[i].y1 = p1[1];
+		pvertices[i].z1 = p1[2];
 
-		pvertices[i*3+1].nx1 = n1[0];
-		pvertices[i*3+1].ny1 = n1[1];
-		pvertices[i*3+1].nz1 = n1[2];
+		pvertices[i].nx1 = n1[0];
+		pvertices[i].ny1 = n1[1];
+		pvertices[i].nz1 = n1[2];
 
-		pvertices[i*3+2].x2 = p2[0];
-		pvertices[i*3+2].y2 = p2[1];
-		pvertices[i*3+2].z2 = p2[2];
+		pvertices[i].x2 = p2[0];
+		pvertices[i].y2 = p2[1];
+		pvertices[i].z2 = p2[2];
 
-		pvertices[i*3+2].nx2 = n2[0];
-		pvertices[i*3+2].ny2 = n2[1];
-		pvertices[i*3+2].nz2 = n2[2];
+		pvertices[i].nx2 = n2[0];
+		pvertices[i].ny2 = n2[1];
+		pvertices[i].nz2 = n2[2];
 		
 		//pindices[i*3] = i*3;
 		//pindices[i*3+1] = i*3+1;
@@ -228,17 +233,12 @@ void PNTriangles::draw()
 		//		glCallList(DLids[depth]);
 		
 	}
-	int numT = triangles.size()*3;
+	int numT = triangles.size();
 	int numTes = tessels[depth].size();
 	int sizeVertexBuf = sizeof(PNVertex)*numT;
 
 	glBindBuffer(GL_ARRAY_BUFFER, VertexVBOID);
-	glBufferData(GL_ARRAY_BUFFER, sizeVertexBuf, &pvertices[0].x0, GL_STATIC_DRAW);
-	
-
-	//	int sizeIndexBuf = sizeof(ushort)*numT;
-	//glBufferData(GL_ARRAY_BUFFER, sizeIndexBuf, pindices, GL_STATIC_DRAW);
-	
+	glBufferData(GL_ARRAY_BUFFER, sizeVertexBuf, &pvertices[0].x0, GL_STATIC_DRAW);	
 
 
 	int pos[7];
@@ -249,11 +249,18 @@ void PNTriangles::draw()
 	pos[4] = glGetAttribLocation(programID, "n1");
 	pos[5] = glGetAttribLocation(programID, "n2");
 	std::cerr << sizeof(PNVertex) << std::endl;
+	std::cerr << sizeof(Tessel) << std::endl;
+	GLenum err = glGetError();
+
 	for(int i =0; i < 6; i++){
 	  glEnableVertexAttribArray(pos[i]); // submit positions on stream 0
 	  glVertexAttribPointer(pos[i], 3, GL_FLOAT, GL_FALSE, sizeof(PNVertex), BUFFER_OFFSET(i*12));
 	  glVertexAttribDivisor(pos[i], 1); // index , divisor
-	  std::cerr << pos[i] << std::endl;
+	  err = glGetError();
+	  if(err != GL_NO_ERROR){
+	    std::cerr << err << std::endl;
+	  }
+
 	}
 
 	
@@ -261,29 +268,20 @@ void PNTriangles::draw()
 
 	int sizeTesselBuf = sizeof(Tessel)*numTes;
 	glBindBuffer(GL_ARRAY_BUFFER, TesselVBOID);
-	glBufferData(GL_ARRAY_BUFFER, sizeTesselBuf, &tessels[depth][0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeTesselBuf, &tessels[depth][0].x, GL_STATIC_DRAW);
 
 	
 	pos[6] = glGetAttribLocation(programID, "phi");
-	std::cerr << pos[6] << std::endl;
 
 
 	glEnableVertexAttribArray(pos[6]);
 	glVertexAttribPointer(pos[6], 3, GL_FLOAT, GL_FALSE, sizeof(Tessel), BUFFER_OFFSET(0) );
-	//	glVertexAttribDivisor(6, 0); // once per vertex
+	glVertexAttribDivisor(6, 0); // once per vertex
 	
-	//	glDrawArraysInstanced(GL_TRIANGLES,0, numTes, numT);
-	glDrawArraysInstanced(GL_POINTS,0, numTes, numT);
-	//	glDrawArrays(GL_POINTS,0, numTes);
 
-	/*
-	glBegin(GL_POINTS);
-	for (int t = 0; t < tessels[depth].size(); t++){
-	  glVertex3f(tessels[depth][t][0],tessels[depth][t][1],tessels[depth][t][2] );
-	}
-	glEnd();
-	*/
-	GLenum err = glGetError();
+	glDrawArraysInstanced(GL_TRIANGLES,0, numTes, numT);
+
+
 
 	if(err != GL_NO_ERROR){
 	  std::cerr << err << std::endl;

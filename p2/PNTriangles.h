@@ -17,7 +17,7 @@
 #include "config.h"
 
 
-#define BUFFER_OFFSET(i) ((void *)NULL +(i))
+#define BUFFER_OFFSET(i) ((char *)NULL +(i))
 
 class PNTriangles {
 
@@ -31,10 +31,14 @@ class PNTriangles {
     float nx2, ny2, nz2;
   };
   
+  struct Tessel
+  {
+    float x,y,z;
+  };
+
 
   typedef Vec3f Vertex;
   typedef Vec3f Normal;
-  typedef Vec3f Tessel;
   typedef Vec3i Triangle;
 
   typedef std::vector<Triangle> Triangles;
