@@ -64,5 +64,5 @@ ADD_LIBRARY( PezEcosystem
 )
 
 INCLUDE_DIRECTORIES( lib/vectormath )
-ADD_EXECUTABLE( Geodesic ${CONSOLE_SYSTEM} Geodesic.c Geodesic.glsl )
+ADD_EXECUTABLE( Geodesic ${CONSOLE_SYSTEM} Geodesic.cpp Geodesic.glsl )
 TARGET_LINK_LIBRARIES( Geodesic PezEcosystem ${PLATFORM_LIBS} )

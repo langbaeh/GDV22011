@@ -126,11 +126,11 @@ void main()
 	teNormal = normalize(n200f+n020f+n002f+n110f+n101f+n011f);
 // castelau
 
-//	vec3 w = (b001-b100);
-//	vec3 z = (b010-b100);
+	vec3 w = (b001-b100);
+	vec3 z = (b010-b100);
 
 
-//	teNormal = normalize(cross(z,w));
+	teNormal = normalize(cross(z,w));
 
     tePatchDistance = gl_TessCoord;
 
@@ -210,7 +210,7 @@ void main()
 
     float d1 = min(min(gTriDistance.x, gTriDistance.y), gTriDistance.z);
     float d2 = min(min(gPatchDistance.x, gPatchDistance.y), gPatchDistance.z);
-    //color = amplify(d1, 40, -0.5) * amplify(d2, 60, -0.5) * color;
+    color = amplify(d1, 40, -0.5) * amplify(d2, 60, -0.5) * color;
 
     FragColor = vec4(color, 1.0);
 }
