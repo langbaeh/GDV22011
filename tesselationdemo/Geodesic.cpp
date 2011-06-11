@@ -4,11 +4,13 @@
 
 #include <fstream>
 #include <vector>
+#include <iostream>
 
 #include <pez.h>
 #include <glew.h>
 #include <glsw.h>
 #include <vectormath.h>
+#include "Vec3.h"
 
 
 static void CreateIcosahedron();
@@ -67,7 +69,7 @@ const char* PezInitialize(int width, int height)
     TessLevelInner = 5;
     TessLevelOuter = 4;
 
-    CreateIcosahedron();
+    //    CreateIcosahedron();
     CreateModel();
 
 
@@ -97,46 +99,142 @@ const char* PezInitialize(int width, int height)
 
 void CreateModel()
 {
-    const int Faces[] = {
-        2, 1, 0,
-        3, 2, 0,
-        4, 3, 0,
-        5, 4, 0,
-        1, 5, 0,
 
-        11, 6,  7,
-        11, 7,  8,
-        11, 8,  9,
-        11, 9,  10,
-        11, 10, 6,
 
-        1, 2, 6,
-        2, 3, 7,
-        3, 4, 8,
-        4, 5, 9,
-        5, 1, 10,
 
-        2,  7, 6,
-        3,  8, 7,
-        4,  9, 8,
-        5, 10, 9,
-        1, 6, 10 };
+    std::istream& in = std::cin;
 
-    const float Verts[] = {
-         0.000f,  0.000f, 1.000f,          0.000f,  0.000f, 1.000f,
-         0.894f,  0.000f,  0.447f,           0.894f,  0.000f,  0.447f, 
-         0.276f,  0.851f,  0.447f,           0.276f,  0.851f,  0.447f, 
-	 -0.724f,  0.526f,  0.447f,  	 -0.724f,  0.526f,  0.447f, 
-	 -0.724f, -0.526f,  0.447f,  	 -0.724f, -0.526f,  0.447f, 
-         0.276f, -0.851f,  0.447f,           0.276f, -0.851f,  0.447f, 
-         0.724f,  0.526f, -0.447f,           0.724f,  0.526f, -0.447f, 
-	 -0.276f,  0.851f, -0.447f,  	 -0.276f,  0.851f, -0.447f, 
-	 -0.894f,  0.000f, -0.447f,  	 -0.894f,  0.000f, -0.447f, 
-	 -0.276f, -0.851f, -0.447f,  	 -0.276f, -0.851f, -0.447f, 
-         0.724f, -0.526f, -0.447f,            0.724f, -0.526f, -0.447f,  
-         0.000f,  0.000f, -1.000f,            0.000f,  0.000f, -1.000f };
+ int nv,nf,ne;
+  char s[256];
+  in >> s;
+
+  bool noff = false;
+
+  if (s[0] == 'O' && s[1] == 'F' && s[2] == 'F')
+    ;
+  else if (s[0] == 'N' && s[1] == 'O' && s[2] == 'F' && s[3] == 'F')
+    noff = true;
+  else{
+    std::cerr << "BAD OFF HEADER "  << std::endl;
+    return;
+  }
+
+  in >> nv;
+  in >> nf;
+  in >> ne;
+
+  if (nv <= 0 || nf <= 0){
+    std::cerr << "number of verts or nf below zero "  << std::endl;
+    return;
+  }
+
+  std::cerr << nv << " " << nf << " " << ne << std::endl;
+
+
+  float Verts[6*nv];
+
+
+
+  Vec3f vmin(10e6 );
+  Vec3f vmax(-10e6 );
+
+
+  for (int i = 0; i < nv; ++i)
+  {
+    in >> Verts[i*6+0];
+    in >> Verts[i*6+1];
+    in >> Verts[i*6+2];
+    Verts[i*6+3] = 0.0;
+    Verts[i*6+4] = 0.0;
+    Verts[i*6+5] = 0.0;
+    std::cerr << Verts[i*6+0] << " " << Verts[i*6+1] << " " << Verts[i*6+2] << std::endl;
+    vmin[0] = std::min(Verts[i*3+0], vmin[0]);
+    vmin[1] = std::min(Verts[i*3+1], vmin[1]);
+    vmin[2] = std::min(Verts[i*3+2], vmin[2]);
+
+    vmax[0] = std::max(Verts[i*3+0], vmax[0]);
+    vmax[1] = std::max(Verts[i*3+1], vmax[1]);
+    vmax[2] = std::max(Verts[i*3+2], vmax[2]);
+    
+  }
+
+  Vec3f mp = (vmin + vmax)*0.5;
+  vmax -= mp;
+  float maxp = std::max(vmax[0],vmax[1]);
+  maxp = std::max(maxp,vmax[2]);
+  for (int i = 0; i < nv; ++i)
+    {
+      Verts[i*6+0] -= mp[0];
+      Verts[i*6+1] -= mp[1];
+      Verts[i*6+2] -= mp[2];
+
+      Verts[i*6+0] /= maxp;
+      Verts[i*6+1] /= maxp;
+      Verts[i*6+2] /= maxp;
+
+    }
+  int Faces[3*nf];
+
+ for (int i = 0; i < nf; ++i)
+  {
+    int three;
+    in >> three;
+    in >> Faces[i*3+0];
+    in >> Faces[i*3+1];
+    in >> Faces[i*3+2];
+    std::cerr << Faces[i*3+0] << " " << Faces[i*3+1] << " " << Faces[i*3+2] << std::endl;
+  }
+
+
+
+ for (int i = 0; i < nf; i++)
+  {
+    Vec3f vec1, vec2, normal;
+    unsigned int id0, id1, id2;
+    id0 = Faces[i*3+0];
+    id1 = Faces[i*3+1];
+    id2 = Faces[i*3+2];
+    
+    Vec3f v0, v1 ,v2;
+    v0 = Vec3f(Verts[id0*6+0],Verts[id0*6+1],Verts[id0*6+2] );
+    v1 = Vec3f(Verts[id1*6+0],Verts[id1*6+1],Verts[id1*6+2] );
+    v2 = Vec3f(Verts[id2*6+0],Verts[id2*6+1],Verts[id2*6+2] );
+
+    vec1 = v1 - v0;
+    vec2 = v2 - v0;
+
+    normal = vec1 ^ vec2; // cross product
+
+    Verts[id0*6+3] += normal[0];
+    Verts[id0*6+4] += normal[1];
+    Verts[id0*6+5] += normal[2];
+
+    Verts[id1*6+3] += normal[0];
+    Verts[id1*6+4] += normal[1];
+    Verts[id1*6+5] += normal[2];
+
+    Verts[id2*6+3] += normal[0];
+    Verts[id2*6+4] += normal[1];
+    Verts[id2*6+5] += normal[2];
+
+  }
+
+  // Normalize normals.
+  for (int i = 0; i < nv; ++i) {
+    float s  = 0.0;
+    s+= Verts[i*6+3];
+    s+= Verts[i*6+4];
+    s+= Verts[i*6+5];
+
+    Verts[i*6+3] /= s;
+    Verts[i*6+4] /= s;
+    Verts[i*6+5] /= s;
+  }
+
+
+  
  
-    IndexCount = sizeof(Faces) / sizeof(Faces[0]);
+    IndexCount = 3*nf;
 
     // Create the VAO:
     GLuint vao;
@@ -146,9 +244,11 @@ void CreateModel()
     // Create the VBO for positions:
     GLuint positions;
     GLsizei stride = 6 * sizeof(float);
+    std::cerr <<  sizeof(Verts) << " " <<  sizeof(Verts)/(6*sizeof(float)) <<std::endl;
+    std::cerr <<  sizeof(Faces) << " " <<  sizeof(Faces)/(3*sizeof(int)) <<std::endl;
     glGenBuffers(1, &positions);
     glBindBuffer(GL_ARRAY_BUFFER, positions);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Verts), Verts, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Verts), &Verts[0], GL_STATIC_DRAW);
     glEnableVertexAttribArray(PositionSlot);
     glVertexAttribPointer(PositionSlot, 3, GL_FLOAT, GL_FALSE, stride, 0);
     glEnableVertexAttribArray(NormalSlot);
@@ -158,7 +258,7 @@ void CreateModel()
     GLuint indices;
     glGenBuffers(1, &indices);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Faces), Faces, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Faces), &Faces[0], GL_STATIC_DRAW);
 }
 
 
