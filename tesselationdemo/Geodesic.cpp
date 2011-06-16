@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -69,7 +68,9 @@ const char* PezInitialize(int width, int height)
     TessLevelInner = 5;
     TessLevelOuter = 4;
 
-    //    CreateIcosahedron();
+
+
+    //CreateIcosahedron();
     CreateModel();
 
 
@@ -147,7 +148,7 @@ void CreateModel()
     Verts[i*6+3] = 0.0;
     Verts[i*6+4] = 0.0;
     Verts[i*6+5] = 0.0;
-    std::cerr << Verts[i*6+0] << " " << Verts[i*6+1] << " " << Verts[i*6+2] << std::endl;
+
     vmin[0] = std::min(Verts[i*3+0], vmin[0]);
     vmin[1] = std::min(Verts[i*3+1], vmin[1]);
     vmin[2] = std::min(Verts[i*3+2], vmin[2]);
@@ -182,10 +183,12 @@ void CreateModel()
     in >> Faces[i*3+0];
     in >> Faces[i*3+1];
     in >> Faces[i*3+2];
-    std::cerr << Faces[i*3+0] << " " << Faces[i*3+1] << " " << Faces[i*3+2] << std::endl;
+    //    std::cerr << Faces[i*3+0] << " " << Faces[i*3+1] << " " << Faces[i*3+2] << std::endl;
+ unsigned int id0 = Faces[i*3+0];
+
   }
 
-
+ 
 
  for (int i = 0; i < nf; i++)
   {
@@ -194,7 +197,8 @@ void CreateModel()
     id0 = Faces[i*3+0];
     id1 = Faces[i*3+1];
     id2 = Faces[i*3+2];
-    
+
+
     Vec3f v0, v1 ,v2;
     v0 = Vec3f(Verts[id0*6+0],Verts[id0*6+1],Verts[id0*6+2] );
     v1 = Vec3f(Verts[id1*6+0],Verts[id1*6+1],Verts[id1*6+2] );
@@ -205,6 +209,8 @@ void CreateModel()
 
     normal = vec1 ^ vec2; // cross product
 
+
+    //    std::cerr << id0 << " " << id1 << " " << id2 << std::endl;
     Verts[id0*6+3] += normal[0];
     Verts[id0*6+4] += normal[1];
     Verts[id0*6+5] += normal[2];
@@ -222,20 +228,24 @@ void CreateModel()
   // Normalize normals.
   for (int i = 0; i < nv; ++i) {
     float s  = 0.0;
-    s+= Verts[i*6+3];
-    s+= Verts[i*6+4];
-    s+= Verts[i*6+5];
 
+
+    s+= Verts[i*6+3]*Verts[i*6+3];
+    s+= Verts[i*6+4]*Verts[i*6+4];
+    s+= Verts[i*6+5]*Verts[i*6+5];
+
+    s = sqrt(s);
     Verts[i*6+3] /= s;
     Verts[i*6+4] /= s;
     Verts[i*6+5] /= s;
+    std::cerr << Verts[i*6+3] << " "  << Verts[i*6+4] << " " << Verts[i*6+5] << std::endl;
   }
 
-
+ 
   
  
-    IndexCount = 3*nf;
-
+  IndexCount = sizeof(Faces)/sizeof(Faces[0]);
+    std::cerr << IndexCount << std::endl;
     // Create the VAO:
     GLuint vao;
     glGenVertexArrays(1, &vao);
@@ -248,7 +258,7 @@ void CreateModel()
     std::cerr <<  sizeof(Faces) << " " <<  sizeof(Faces)/(3*sizeof(int)) <<std::endl;
     glGenBuffers(1, &positions);
     glBindBuffer(GL_ARRAY_BUFFER, positions);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Verts), &Verts[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Verts), Verts, GL_STATIC_DRAW);
     glEnableVertexAttribArray(PositionSlot);
     glVertexAttribPointer(PositionSlot, 3, GL_FLOAT, GL_FALSE, stride, 0);
     glEnableVertexAttribArray(NormalSlot);
@@ -258,7 +268,7 @@ void CreateModel()
     GLuint indices;
     glGenBuffers(1, &indices);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Faces), &Faces[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Faces), Faces, GL_STATIC_DRAW);
 }
 
 
@@ -304,6 +314,7 @@ static void CreateIcosahedron()
          0.000f,  0.000f, -1.000f,            0.000f,  0.000f, -1.000f };
  
     IndexCount = sizeof(Faces) / sizeof(Faces[0]);
+    std::cerr << IndexCount << std::endl;
 
     // Create the VAO:
     GLuint vao;
