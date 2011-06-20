@@ -44,11 +44,41 @@ Die restlichen 4 Punkte folgen aus einem weiteren Schritt des de Casteljau:
 \end{align}
 
 % evtl plot
-\vspace{10cm}
+\begin{pspicture}(-3,-3)(3,3) 
+    \psline[linewidth=0.5 pt]{*-*}(0,0)(0,-3) 
+    \psline[linewidth=0.5 pt]{*-*}(0,0)(0,3) 
+    \psline[linewidth=0.5 pt]{*-*}(0,0)(-3,0) 
+    \psline[linewidth=0.5 pt]{*-*}(0,0)(3,0)     
+    \psline[linewidth=0.5 pt]{*-*}(-3,-3)(-3,0) 
+    \psline[linewidth=0.5 pt]{*-*}(-3,0)(-3,3) 
+    \psline[linewidth=0.5 pt]{*-*}(3,-3)(3,0) 
+    \psline[linewidth=0.5 pt]{*-*}(3,0)(3,3) 
+    \psline[linewidth=0.5 pt]{*-*}(3,-3)(0,-3) 
+    \psline[linewidth=0.5 pt]{*-*}(0,-3)(-3,-3) 
+    \psline[linewidth=0.5 pt]{*-*}(3,3)(0,3) 
+    \psline[linewidth=0.5 pt]{*-*}(0,3)(-3,3)
+    \uput[225](-3,3){$b_{20,02}$}
+    \uput[225](0,3){$b_{11,02}$}
+    \uput[225](3,3){$b_{02,02}$}
+    \uput[225](-3,0){$b_{20,11}$}
+    \uput[225](0,0){$b_{11,11}$}
+    \uput[225](3,0){$b_{02,11}$}
+    \uput[225](-3,-3){$b_{20,20}$}
+    \uput[225](0,-3){$b_{11,20}$}
+    \uput[225](3,-3){$b_{02,20}$}
+\end{pspicture}
 
 %-----------------------------------------------
 \subsection*{c)}
 
+
+\begin{pspicture}(-7,-7)(7,7) 
+    \psdots*[dotstyle=o](-6,-6)(-6,-2)(-6,2)(-6,6) 
+    \psdots*[dotstyle=o](-2,-6)(-2,-2)(-2,2)(-2,6) 
+    \psdots*[dotstyle=o](2,-6)(2,-2)(2,2)(2,6) 
+    \psdots*[dotstyle=o](6,-6)(6,-2)(6,2)(6,6)
+    \psdots*[dotstyle=*](0,0)
+\end{pspicture}
 
 
 %-----------------------------------------------
