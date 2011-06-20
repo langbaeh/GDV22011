@@ -12,21 +12,18 @@
 //                                Boyd and Mitchell                          //
 // http://alex.vlachos.com/graphics/CurvedPNTriangles.pdf                    //
 // ========================================================================= //
-varying vec3 Normal;
-varying vec3 viewDir;
+#version 130
+
+out vec3 Normal;
+out vec3 viewDir;
+
+in vec3 p0, p1, p2;
+in vec3 n0, n1, n2;
+in vec3 phi;
 
 void main()
 {
 
-	vec3 phi = vec3(gl_MultiTexCoord6.xyz);
-	
-	vec3 p0 = gl_MultiTexCoord0.xyz;
-	vec3 p1 = gl_MultiTexCoord1.xyz;
-	vec3 p2 = gl_MultiTexCoord2.xyz;
-
-	vec3 n0 = gl_MultiTexCoord3.xyz;
-	vec3 n1 = gl_MultiTexCoord4.xyz;
-	vec3 n2 = gl_MultiTexCoord5.xyz;
 
 	vec3 P01 = 1.0/3.0*(2.0*p0 + p1);
 	vec3 P10 = 1.0/3.0*(2.0*p1 + p0);
@@ -63,6 +60,8 @@ void main()
 
 	vec3 pos = phi.x*b100 + phi.y*b010 + phi.z*b001;
 
+	pos = phi.x*p0 + phi.y*p1 + phi.z*p2;
+
 	// "Normalenmodell" 
 	vec3 n110 = normalize(n0 + n1);
 	vec3 n101 = normalize(n0 + n2);
@@ -74,9 +73,12 @@ void main()
 
 	Normal = phi.x*n100 + phi.y*n010 + phi.z*n001;
 
+
 	Normal = gl_NormalMatrix*Normal;
 	viewDir = gl_ModelViewMatrixInverse[3].xyz;
-
+	
+	
 	gl_Position =  gl_ModelViewProjectionMatrix * vec4(pos,1.0);
+
 
 }
