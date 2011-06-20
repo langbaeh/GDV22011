@@ -30,8 +30,37 @@ Bei einem uniformen Knotenvektor geht der Spline $S$ an der Stelle $x_j$ genau d
 GUT GENUG ERKLAERT???
 
 
-\subsection{c)}
+\subsection*{c)}
 
 Fuer zwei Knoten eines Splines $S$, $x_i$ und $x_{i+1}$ ergibt sich der  naechste Knoten $x_{i+2} = 1/3 *( x_{i+1}- x_i)$.
 
 REICHT DAS ??? 
+
+\subsection*{d)}
+
+\begin{eqnarray}
+    B^2_{j-1}(x_j) &=& \frac{t - x_{j-1}}{x_{j+1} - x_{j-1}} \\
+    B'^2_{j-1}(x_j)&=& \frac{1}{x_{j+1} - x_{j-1}}\\
+    &=& \frac{1}{2 \triangle x}
+\end{eqnarray}
+
+\begin{eqnarray}
+    B^2_{j-2}(x_j)&=& \frac{x_{j+1} - x_{j}}{x_{j+1} - x_{j-1}}\\
+    B'^2_{j-2}(x_j)&=& -\frac{1}{x_{j+1} - x_{j-1}}\\
+        &=& -\frac{1}{2 \triangle x}
+\end{eqnarray}
+
+Damit ist die komplette Ableitung:
+
+\begin{equation}
+    S'(x_j) =  \frac{1}{2 \triangle x} b_{j-1} - \frac{1}{2 \triangle x} b_{j-2}
+\end{equation}
+
+Die Tangente an $x_j$ ist der Vektor von $b_{j-1}$ nach $b_{j-2}$.
+
+GENUG GELABERT?
+
+
+\subsection*{e)}
+
+\input{plot3}
