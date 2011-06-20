@@ -43,30 +43,40 @@ Die restlichen 4 Punkte folgen aus einem weiteren Schritt des de Casteljau:
 	&P(\frac{3}{4},\frac{3}{4}) = \frac{2}{3} 
 \end{align}
 
-% evtl plot
-\begin{pspicture}(-3,-3)(3,3) 
-    \psline[linewidth=0.5 pt]{*-*}(0,0)(0,-3) 
-    \psline[linewidth=0.5 pt]{*-*}(0,0)(0,3) 
-    \psline[linewidth=0.5 pt]{*-*}(0,0)(-3,0) 
-    \psline[linewidth=0.5 pt]{*-*}(0,0)(3,0)     
-    \psline[linewidth=0.5 pt]{*-*}(-3,-3)(-3,0) 
-    \psline[linewidth=0.5 pt]{*-*}(-3,0)(-3,3) 
-    \psline[linewidth=0.5 pt]{*-*}(3,-3)(3,0) 
-    \psline[linewidth=0.5 pt]{*-*}(3,0)(3,3) 
-    \psline[linewidth=0.5 pt]{*-*}(3,-3)(0,-3) 
-    \psline[linewidth=0.5 pt]{*-*}(0,-3)(-3,-3) 
-    \psline[linewidth=0.5 pt]{*-*}(3,3)(0,3) 
-    \psline[linewidth=0.5 pt]{*-*}(0,3)(-3,3)
-    \uput[225](-3,3){$b_{20,02}$}
-    \uput[225](0,3){$b_{11,02}$}
-    \uput[225](3,3){$b_{02,02}$}
-    \uput[225](-3,0){$b_{20,11}$}
+\begin{centering}
+	
+
+\begin{pspicture}(-4,-4)(4,4) 
+    \psline[linewidth=0.5 pt]{*-*}(0,0)(0,-4) 
+    \psline[linewidth=0.5 pt]{*-*}(0,0)(0,4) 
+    \psline[linewidth=0.5 pt]{*-*}(0,0)(-4,0) 
+    \psline[linewidth=0.5 pt]{*-*}(0,0)(4,0)     
+    \psline[linewidth=0.5 pt]{*-*}(-4,-4)(-4,0) 
+    \psline[linewidth=0.5 pt]{*-*}(-4,0)(-4,4) 
+    \psline[linewidth=0.5 pt]{*-*}(4,-4)(4,0) 
+    \psline[linewidth=0.5 pt]{*-*}(4,0)(4,4) 
+    \psline[linewidth=0.5 pt]{*-*}(4,-4)(0,-4) 
+    \psline[linewidth=0.5 pt]{*-*}(0,-4)(-4,-4) 
+    \psline[linewidth=0.5 pt]{*-*}(4,4)(0,4) 
+    \psline[linewidth=0.5 pt]{*-*}(0,4)(-4,4)
+    \uput[225](-4,4){$b_{20,02}$}
+    \uput[225](0,4){$b_{11,02}$}
+    \uput[225](4,4){$b_{02,02}$}
+    \uput[225](-4,0){$b_{20,11}$}
     \uput[225](0,0){$b_{11,11}$}
-    \uput[225](3,0){$b_{02,11}$}
-    \uput[225](-3,-3){$b_{20,20}$}
-    \uput[225](0,-3){$b_{11,20}$}
-    \uput[225](3,-3){$b_{02,20}$}
+    \uput[225](4,0){$b_{02,11}$}
+    \uput[225](-4,-4){$b_{20,20}$}
+    \uput[225](0,-4){$b_{11,20}$}
+    \uput[225](4,-4){$b_{02,20}$}
+
+	\psdots[linewidth= 2pt, dotstyle=square](-4,-2)(-4,2)(-2,-4)(-2,0)(-2,4)
+										(0,-2)(0,2)
+										(4,-2)(4,2)(2,-4)(2,0)(2,4)
+										
+	\psdots[linewidth= 2pt, dotstyle=asterisk](-2,-2)(-2,2)(2,-2)(2,2)
 \end{pspicture}
+
+\end{centering}
 
 %-----------------------------------------------
 \subsection*{c)}
