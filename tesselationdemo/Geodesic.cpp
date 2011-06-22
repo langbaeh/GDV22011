@@ -65,8 +65,8 @@ void PezRender(GLuint fbo)
 
 const char* PezInitialize(int width, int height)
 {
-    TessLevelInner = 5;
-    TessLevelOuter = 4;
+    TessLevelInner = 6;
+    TessLevelOuter = 7;
 
 
 
@@ -180,9 +180,9 @@ void CreateModel()
   {
     int three;
     in >> three;
-    in >> Faces[i*3+0];
-    in >> Faces[i*3+1];
     in >> Faces[i*3+2];
+    in >> Faces[i*3+1];
+    in >> Faces[i*3+0];
     //    std::cerr << Faces[i*3+0] << " " << Faces[i*3+1] << " " << Faces[i*3+2] << std::endl;
  unsigned int id0 = Faces[i*3+0];
 
@@ -234,18 +234,18 @@ void CreateModel()
     s+= Verts[i*6+4]*Verts[i*6+4];
     s+= Verts[i*6+5]*Verts[i*6+5];
 
-    s = sqrt(s);
+    s = -sqrt(s);
     Verts[i*6+3] /= s;
     Verts[i*6+4] /= s;
     Verts[i*6+5] /= s;
-    std::cerr << Verts[i*6+3] << " "  << Verts[i*6+4] << " " << Verts[i*6+5] << std::endl;
+    //    std::cerr << Verts[i*6+3] << " "  << Verts[i*6+4] << " " << Verts[i*6+5] << std::endl;
   }
 
  
   
  
   IndexCount = sizeof(Faces)/sizeof(Faces[0]);
-    std::cerr << IndexCount << std::endl;
+  //  std::cerr << IndexCount << std::endl;
     // Create the VAO:
     GLuint vao;
     glGenVertexArrays(1, &vao);
@@ -254,8 +254,8 @@ void CreateModel()
     // Create the VBO for positions:
     GLuint positions;
     GLsizei stride = 6 * sizeof(float);
-    std::cerr <<  sizeof(Verts) << " " <<  sizeof(Verts)/(6*sizeof(float)) <<std::endl;
-    std::cerr <<  sizeof(Faces) << " " <<  sizeof(Faces)/(3*sizeof(int)) <<std::endl;
+    // std::cerr <<  sizeof(Verts) << " " <<  sizeof(Verts)/(6*sizeof(float)) <<std::endl;
+    //std::cerr <<  sizeof(Faces) << " " <<  sizeof(Faces)/(3*sizeof(int)) <<std::endl;
     glGenBuffers(1, &positions);
     glBindBuffer(GL_ARRAY_BUFFER, positions);
     glBufferData(GL_ARRAY_BUFFER, sizeof(Verts), Verts, GL_STATIC_DRAW);
