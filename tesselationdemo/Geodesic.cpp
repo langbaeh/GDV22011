@@ -300,7 +300,7 @@ static void CreateIcosahedron()
         1, 6, 10 };
 
     const float Verts[] = {
-         0.000f,  0.000f, 1.000f,          0.000f,  0.000f, 1.000f,
+      0.000f,  0.000f, .500f,          0.894f,  0.000f,  0.447f,  //0.000f,  0.000f, 1.000f,
          0.894f,  0.000f,  0.447f,           0.894f,  0.000f,  0.447f, 
          0.276f,  0.851f,  0.447f,           0.276f,  0.851f,  0.447f, 
 	 -0.724f,  0.526f,  0.447f,  	 -0.724f,  0.526f,  0.447f, 
@@ -414,7 +414,7 @@ static void LoadEffect()
 
 void PezUpdate(unsigned int elapsedMicroseconds)
 {
-
+  //    elapsedMicroseconds = 0;
     const float RadiansPerMicrosecond = 0.0000005f;
     static float Theta = 0;
     Theta += elapsedMicroseconds * RadiansPerMicrosecond;

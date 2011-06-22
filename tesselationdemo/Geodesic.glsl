@@ -31,12 +31,24 @@ void main()
 {
     tcPosition[ID] = vPosition[ID];
     tcNormal[ID] = vNormal[ID];
+       
+
+
+    int m = (ID%3);
+    int i = ID-m;	
+
+    float d01 = sqrt(1.0-(dot(tcNormal[i], tcNormal[i+1])+1.0)/2.0);
+    float d02 = sqrt(1.0-(dot(tcNormal[i], tcNormal[i+2])+1.0)/2.0);
+    float d12 = sqrt(1.0-(dot(tcNormal[i+1], tcNormal[i+2])+1.0)/2.0);
+
+
+       gl_TessLevelOuter[2] = ceil(d01*5);
+       gl_TessLevelOuter[0] = ceil(d12*5);
+       gl_TessLevelOuter[1] = ceil(d02*5);
+
 
     if (ID == 0) {
-        gl_TessLevelInner[0] = TessLevelInner;
-        gl_TessLevelOuter[0] = TessLevelOuter;
-        gl_TessLevelOuter[1] = TessLevelOuter;
-        gl_TessLevelOuter[2] = TessLevelOuter;
+        gl_TessLevelInner[0] = max(gl_TessLevelOuter[2],max(gl_TessLevelOuter[1],gl_TessLevelOuter[0]));    
     }
 }
 
@@ -53,16 +65,7 @@ uniform mat4 Modelview;
 
 void main()
 {
- /*
-   vec3 p0 = gl_TessCoord.x * tcPosition[0];
-    vec3 p1 = gl_TessCoord.y * tcPosition[1];
-    vec3 p2 = gl_TessCoord.z * tcPosition[2];
 
-    vec3 n0 = gl_TessCoord.x * tcNormal[0];
-    vec3 n1 = gl_TessCoord.y * tcNormal[1];
-    vec3 n2 = gl_TessCoord.z * tcNormal[2];
-
-*/
     vec3 p0 = tcPosition[0];
     vec3 p1 = tcPosition[1];
     vec3 p2 = tcPosition[2];
@@ -192,6 +195,8 @@ in float gPrimitive;
 uniform vec3 LightPosition;
 uniform vec3 DiffuseMaterial;
 uniform vec3 AmbientMaterial;
+const bool DrawLines = true;
+const vec3 InnerLineColor = vec3(1, 1, 1);
 
 float amplify(float d, float scale, float offset)
 {
@@ -208,9 +213,16 @@ void main()
     float df = abs(dot(N, L));
     vec3 color = AmbientMaterial + df * DiffuseMaterial;
 
-    float d1 = min(min(gTriDistance.x, gTriDistance.y), gTriDistance.z);
-    float d2 = min(min(gPatchDistance.x, gPatchDistance.y), gPatchDistance.z);
-    color = amplify(d1, 40, -0.5) * amplify(d2, 60, -0.5) * color;
+if (DrawLines) {
+        float d1 = min(min(gTriDistance.x, gTriDistance.y), gTriDistance.z);
+        float d2 = min(min(gPatchDistance.x, gPatchDistance.y), gPatchDistance.z);
+        d1 = 1 - amplify(d1, 50, -0.5);
+        d2 = amplify(d2, 50, -0.5);
+        color = d2 * color + d1 * d2 * InnerLineColor;
+    }
+
+ 
+
 
     FragColor = vec4(color, 1.0);
 }
