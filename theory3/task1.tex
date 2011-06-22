@@ -1,0 +1,40 @@
+%!TEX root = main.tex
+
+\section*{Aufgabe 1 Rationale Bezier-Kurven und Kreise}
+
+\subsection*{a)}
+
+Aus der Endpunktinterpolation folgt: $b_{20} = \vect{0 \\ 1}$ und $b_{02} = \vect{1 \\ 0}$
+
+\begin{eqnarray}
+    t_0 = P_0' &=& 2 \left( B_{10}(0) b^{[1] }_{10} +B_{01}(0) b^{[1] }_{01} \right)\\
+    P_0' &=& 2 \left( b_{11} - b_{20} + 0 \right) = \vect{1 \\ 0}
+\end{eqnarray}
+
+\begin{eqnarray}
+    t_1 = P_1' &=& 2 \left( B_{10}(1) b^{[1] }_{10} +B_{01}(1) b^{[1] }_{01} \right)\\
+    P_1' &=& 2 \left( 0 +b_{02} - b_{11} \right ) = \vect{0 \\ -1}
+\end{eqnarray}
+
+$\Rightarrow b_{11} = \vect{1 \\ 1}$
+
+Damit können wir de Casteljau ausführen:
+\begin{eqnarray}
+    P(0.5)&=& B_{20}(0.5) b_{20} + B_{11}(0.5) b_{11} + B_{02}(0.5) b_{02}\\
+    &=& 0.25 \vect{0 \\ 1} + 0.5 \vect{1 \\ 1} + 0.25 \vect{1 \\ 0}\\
+    &=& \vect{0.75 \\ 0.75} \neq \vect{1/\sqrt{2} \\ 1/\sqrt{2}}
+\end{eqnarray}
+
+
+\subsection*{b)}
+
+$\omega_{20} = \omega_{02} = 1$
+\begin{eqnarray}
+    R(0.5)= \vect{1/\sqrt{2} \\ 1/\sqrt{2}} &=& 
+    \frac{\omega_{20} B_{20}(0.5) b_{20} + \omega_{11} B_{11}(0.5) b_{11} +\omega_{02} B_{02}(0.5) b_{02} }{B_{20}(0.5) b_{20} + B_{11}(0.5) b_{11} + B_{02}(0.5) b_{02}} \\
+    &=& \frac{ \vect{0 \\ 0.25} + \omega_{11} \vect{0.5 \\ 0.5} +\vect{0.25 \\ 0} }{\vect{0.75 \\ 0.75}} \\    
+     &=& \frac{ \vect{\omega_{11} 0.5 + 0.25 \\ \omega_{11} 0.5 + 0.25}  }{\vect{0.75 \\ 0.75}} 
+\end{eqnarray}
+
+
+$\Rightarrow \omega_{11} = \frac{3-\sqrt{2}}{2\sqrt{2}}\vect{1 \\ 1}$

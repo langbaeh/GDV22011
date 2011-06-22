@@ -1,0 +1,59 @@
+%!TEX root = main.tex
+
+\section*{Aufgabe 3 B-Splines vom Grad 2}
+
+\subsection*{a)}
+Fuer Knoten $x_j$ sind die Basisfunktionen $B^2_{j-1}$ und $B^2_{j-2}$ ungleich $0$. Vereinfachen ergibt:
+\begin{eqnarray}
+    B^2_{j-1}&=& \frac{x_j - x_{j-1}}{x_{j+1} - x_{j-1}} \\
+    B^2_{j-2}&=& \frac{x_{j+1} - x_{j}}{x_{j+1} - x_{j-1}}
+\end{eqnarray}
+
+Daraus folgt: 
+\begin{equation}
+    S(x_j) = \frac{x_j - x_{j-1}}{x_{j+1} - x_{j-1}} b_{j-1} +  \frac{x_{j+1} - x_{j}}{x_{j+1} - x_{j-1}} b_{j-2}
+\end{equation}
+
+
+
+\subsection*{b)}
+
+Fuer einen uniformen Knotenvektor:
+\begin{eqnarray}
+    S(x_j) &=& \frac{x_j - x_{j-1}}{x_{j+1} - x_{j-1}} b_{j-1} +  \frac{x_{j+1} - x_{j}}{x_{j+1} - x_{j-1}} b_{j-2} \\
+     &=& \frac{\triangle x}{2 \triangle x} b_{j-1} +  \frac{\triangle x}{2 \triangle x} b_{j-2} \\
+      &=& 0.5 ( b_{j-1} + b_{j-2}) 
+\end{eqnarray}
+
+Bei einem uniformen Knotenvektor geht der Spline $S$ an der Stelle $x_j$ genau durch den Mittelpunkt zwischen $b_{j-1}$ und  $b_{j-2}$.
+
+
+
+
+\subsection*{c)}
+Fuer zwei Knoten eines Splines $S$, $x_i$ und $x_{i+1}$ ergibt sich der  naechste Knoten $x_{i+2} = x_{i+1} + 1/3 *( x_{i+1} - x_i)$.
+
+\subsection*{d)}
+
+\begin{eqnarray}
+    B^2_{j-1}(x_j) &=& \frac{t - x_{j-1}}{x_{j+1} - x_{j-1}} \\
+    B'^2_{j-1}(x_j)&=& \frac{1}{x_{j+1} - x_{j-1}}\\
+    &=& \frac{1}{2 \triangle x}
+\end{eqnarray}
+
+\begin{eqnarray}
+    B^2_{j-2}(x_j)&=& \frac{x_{j+1} - x_{j}}{x_{j+1} - x_{j-1}}\\
+    B'^2_{j-2}(x_j)&=& -\frac{1}{x_{j+1} - x_{j-1}}\\
+        &=& -\frac{1}{2 \triangle x}
+\end{eqnarray}
+
+Damit ist die komplette Ableitung:
+
+\begin{equation}
+    S'(x_j) =  \frac{1}{2 \triangle x} b_{j-1} - \frac{1}{2 \triangle x} b_{j-2}
+\end{equation}
+
+Die Tangente an $x_j$ ist der Vektor von $b_{j-2}$ nach $b_{j-1}$.
+\subsection*{e)}
+
+\input{plot3}
