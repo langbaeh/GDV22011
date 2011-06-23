@@ -42,9 +42,9 @@ void main()
     float d12 = sqrt(1.0-(dot(tcNormal[i+1], tcNormal[i+2])+1.0)/2.0);
 
 
-       gl_TessLevelOuter[2] = ceil(d01*5);
-       gl_TessLevelOuter[0] = ceil(d12*5);
-       gl_TessLevelOuter[1] = ceil(d02*5);
+       gl_TessLevelOuter[2] = ceil(d01*10);
+       gl_TessLevelOuter[0] = ceil(d12*10);
+       gl_TessLevelOuter[1] = ceil(d02*10);
 
 
     if (ID == 0) {

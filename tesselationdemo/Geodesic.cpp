@@ -38,6 +38,21 @@ static ShaderUniforms Uniforms;
 static float TessLevelInner;
 static float TessLevelOuter;
 
+// Camera information
+Point3 eyePosition = P3MakeFromElems(0, 0, -10);
+Point3 targetPosition = P3MakeFromElems(0, 0, 1.0);
+Vector3 upVector = V3MakeFromElems(0, 1, 0);
+float camAngleX=0.0f, camAngleY=0.0f;   // camera angles
+
+// Button information
+float mouseSensitivy = 0.001f;
+bool b_r = false;
+int mouseButton = 0;
+int mouseX = 0;
+int mouseY = 0;
+
+
+
 void PezRender(GLuint fbo)
 {
     glUniform1f(Uniforms.TessLevelInner, TessLevelInner);
@@ -415,15 +430,17 @@ static void LoadEffect()
 void PezUpdate(unsigned int elapsedMicroseconds)
 {
   //    elapsedMicroseconds = 0;
-    const float RadiansPerMicrosecond = 0.0000005f;
-    static float Theta = 0;
-    Theta += elapsedMicroseconds * RadiansPerMicrosecond;
-    Matrix4 rotation = M4MakeRotationX(Theta);
-    Point3 eyePosition = P3MakeFromElems(0, 0, -10);
+  //    const float RadiansPerMicrosecond = 0.0000005f;
+  // static float Theta = 0;
+  // Theta += elapsedMicroseconds * RadiansPerMicrosecond;
 
-    Point3 targetPosition = P3MakeFromElems(0, 0, 0);
-    Vector3 upVector = V3MakeFromElems(0, 1, 0);
+    //    Vector3 rot = V3MakeFromElems(camAngleX, camAngleY, 0.0);
+    Vector3 rot = V3MakeFromElems(0.0, camAngleY, camAngleX);
+    Matrix4 rotation = M4MakeRotationZYX(rot);
+ 
+
     Matrix4 lookAt = M4MakeLookAt(eyePosition, targetPosition, upVector);
+
     ModelviewMatrix = M4Mul(lookAt, rotation);
     NormalMatrix = M4GetUpper3x3(ModelviewMatrix);
 
@@ -440,4 +457,48 @@ void PezUpdate(unsigned int elapsedMicroseconds)
 
 void PezHandleMouse(int x, int y, int action)
 {
+  switch(action){
+  case PEZ_LEFT_DOWN:
+    mouseButton = 1;
+    mouseX = x;
+    mouseY = y;
+    break;
+case PEZ_RIGHT_DOWN:
+    mouseButton = 2;
+    mouseX = x;
+    mouseY = y;
+    break;
+case PEZ_MIDDLE_DOWN:
+    mouseButton = 3;
+    mouseX = x;
+    mouseY = y;
+    break;
+  case PEZ_UP:
+    mouseButton = 0;
+    break; 
+  case PEZ_MOVE:
+    if(mouseButton == 1){ // rotate
+      // update angle with relative movement
+      camAngleX = fmod(camAngleX + (x-mouseX)*mouseSensitivy,360.0f);
+      camAngleY -= (y-mouseY)*mouseSensitivy;
+      // limit y angle by 85 degree
+      if (camAngleY > 85) camAngleY = 85;
+      if (camAngleY < -85) camAngleY = -85;
+    }else if (mouseButton == 2){ // zoom
+      Vector3 mv = V3MakeFromElems(0.0,0.0,0.1*(y-mouseY)*mouseSensitivy);
+      eyePosition = P3SubV3(eyePosition,mv);
+    }else if (mouseButton == 3){
+      // update camPos
+      Vector3 mv = V3MakeFromElems(0.1*mouseSensitivy*(x-mouseX),
+				   0.1*mouseSensitivy*(y-mouseY),
+				   0.0);
+      eyePosition = P3AddV3(eyePosition,mv);
+    }
+    break;
+  }
+  
+  
+
+
+
 }

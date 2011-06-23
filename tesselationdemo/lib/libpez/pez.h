@@ -19,14 +19,14 @@ void PezHandleMouse(int x, int y, int action);    // handle mouse action: PEZ_DO
 //
 #define PEZ_VIEWPORT_WIDTH 600
 #define PEZ_VIEWPORT_HEIGHT 600
-#define PEZ_ENABLE_MULTISAMPLING 0
+#define PEZ_ENABLE_MULTISAMPLING 1
 #define PEZ_VERTICAL_SYNC 1
 #define PEZ_GL_VERSION_TOKEN "GL4"
 #define PEZ_FORWARD_COMPATIBLE_GL 1
 
 // Pez also defines a small handful of fixed constants and macros:
 //
-enum {PEZ_DOWN, PEZ_UP, PEZ_MOVE};
+  enum {PEZ_LEFT_DOWN, PEZ_MIDDLE_DOWN, PEZ_RIGHT_DOWN, PEZ_UP, PEZ_MOVE};
 #define TwoPi (6.28318531f)
 #define Pi (3.14159265f)
 #define countof(A) (sizeof(A) / sizeof(A[0]))
