@@ -23,7 +23,7 @@ typedef struct {
     GLuint LightPosition;
     GLuint AmbientMaterial;
     GLuint DiffuseMaterial;
-    GLuint TessLevelInner;
+    GLuint TessLevel;
     GLuint TessLevelOuter;
     GLuint NormalModel;
     GLuint Tesselation;
@@ -38,7 +38,7 @@ static Matrix4 ProjectionMatrix;
 static Matrix4 ModelviewMatrix;
 static Matrix3 NormalMatrix;
 static ShaderUniforms Uniforms;
-static float TessLevelInner;
+static float TessLevel = 10.0;;
 static float TessLevelOuter;
 static float NormalModel = 2.0;
 static float Tesselation = 0.0;
@@ -61,7 +61,7 @@ int mouseY = 0;
 
 void PezRender(GLuint fbo)
 {
-    glUniform1f(Uniforms.TessLevelInner, TessLevelInner);
+    glUniform1f(Uniforms.TessLevel, TessLevel);
     glUniform1f(Uniforms.TessLevelOuter, TessLevelOuter);
     glUniform1f(Uniforms.NormalModel, NormalModel);
     glUniform1f(Uniforms.Tesselation, Tesselation);
@@ -89,7 +89,7 @@ void PezRender(GLuint fbo)
 
 const char* PezInitialize(int width, int height)
 {
-    TessLevelInner = 6;
+    TessLevel = 10.0;
     TessLevelOuter = 7;
 
 
@@ -106,7 +106,7 @@ const char* PezInitialize(int width, int height)
     Uniforms.LightPosition = glGetUniformLocation(ProgramHandle, "LightPosition");
     Uniforms.AmbientMaterial = glGetUniformLocation(ProgramHandle, "AmbientMaterial");
     Uniforms.DiffuseMaterial = glGetUniformLocation(ProgramHandle, "DiffuseMaterial");
-    Uniforms.TessLevelInner = glGetUniformLocation(ProgramHandle, "TessLevelInner");
+    Uniforms.TessLevel = glGetUniformLocation(ProgramHandle, "TessLevel");
     Uniforms.TessLevelOuter = glGetUniformLocation(ProgramHandle, "TessLevelOuter");
     Uniforms.NormalModel = glGetUniformLocation(ProgramHandle, "NormalModel");
     Uniforms.Tesselation = glGetUniformLocation(ProgramHandle, "Tesselation");
@@ -487,6 +487,12 @@ void PezHandleKey(char key){
     if (Tesselation>0.0) Tesselation = 0.0;
     else Tesselation = 1.0;
     break;
+  case '.':
+    TessLevel++;
+    break;
+  case ',':
+    TessLevel = TessLevel > 1 ? TessLevel - 1 : 1;
+      break;
   default:
     std::cerr << "can't handle key: " << key << std::endl;
     

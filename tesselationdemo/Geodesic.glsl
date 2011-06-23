@@ -22,7 +22,7 @@ in vec3 vPosition[];
 in vec3 vNormal[];
 out vec3 tcPosition[];
 out vec3 tcNormal[];
-uniform float TessLevelInner;
+uniform float TessLevel;
 uniform float TessLevelOuter;
 uniform float Tesselation;
 
@@ -44,9 +44,9 @@ void main()
     float d12 = sqrt(1.0-(dot(tcNormal[i+1], tcNormal[i+2])+1.0)/2.0);
 
 
-       gl_TessLevelOuter[2] = ceil(d01*10);
-       gl_TessLevelOuter[0] = ceil(d12*10);
-       gl_TessLevelOuter[1] = ceil(d02*10);
+       gl_TessLevelOuter[2] = ceil(d01*TessLevel);
+       gl_TessLevelOuter[0] = ceil(d12*TessLevel);
+       gl_TessLevelOuter[1] = ceil(d02*TessLevel);
       gl_TessLevelInner[0] = max(gl_TessLevelOuter[2],max(gl_TessLevelOuter[1],gl_TessLevelOuter[0]));    
   
     }else{
@@ -143,7 +143,7 @@ void main()
 	vec3 z = (b010-b100);
 
 
-	teNormal = normalize(cross(z,w));
+	teNormal = normalize(cross(w,z));
 	}else {
 	    vec3 n110 = normalize(n0 + n1);
 	    vec3 n101 = normalize(n0 + n2);
@@ -233,7 +233,7 @@ void main()
     vec3 L = LightPosition;
     float df = abs(dot(N, L));
     vec3 color = AmbientMaterial + df * DiffuseMaterial;
-
+    color = (vec3(1)+N) / 2.0;
 if (Wireframe > 0.0) {
         float d1 = min(min(gTriDistance.x, gTriDistance.y), gTriDistance.z);
         float d2 = min(min(gPatchDistance.x, gPatchDistance.y), gPatchDistance.z);
@@ -242,6 +242,7 @@ if (Wireframe > 0.0) {
         color = d2 * color + d1 * d2 * InnerLineColor;
     }
 
+//    FragColor = vec4(color, 1.0);
     FragColor = vec4(color, 1.0);
 }
 
