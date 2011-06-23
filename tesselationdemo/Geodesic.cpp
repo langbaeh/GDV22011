@@ -25,6 +25,9 @@ typedef struct {
     GLuint DiffuseMaterial;
     GLuint TessLevelInner;
     GLuint TessLevelOuter;
+    GLuint NormalModel;
+    GLuint Tesselation;
+    GLuint Wireframe;
 } ShaderUniforms;
 
 static GLsizei IndexCount;
@@ -37,6 +40,9 @@ static Matrix3 NormalMatrix;
 static ShaderUniforms Uniforms;
 static float TessLevelInner;
 static float TessLevelOuter;
+static float NormalModel = 2.0;
+static float Tesselation = 0.0;
+static float Wireframe = 0.0;
 
 // Camera information
 Point3 eyePosition = P3MakeFromElems(0, 0, -10);
@@ -57,6 +63,9 @@ void PezRender(GLuint fbo)
 {
     glUniform1f(Uniforms.TessLevelInner, TessLevelInner);
     glUniform1f(Uniforms.TessLevelOuter, TessLevelOuter);
+    glUniform1f(Uniforms.NormalModel, NormalModel);
+    glUniform1f(Uniforms.Tesselation, Tesselation);
+    glUniform1f(Uniforms.Wireframe, Wireframe);
     
     Vector4 lightPosition = V4MakeFromElems(0.25, 0.25, 1, 0);
     glUniform3fv(Uniforms.LightPosition, 1, &lightPosition.x);
@@ -99,6 +108,9 @@ const char* PezInitialize(int width, int height)
     Uniforms.DiffuseMaterial = glGetUniformLocation(ProgramHandle, "DiffuseMaterial");
     Uniforms.TessLevelInner = glGetUniformLocation(ProgramHandle, "TessLevelInner");
     Uniforms.TessLevelOuter = glGetUniformLocation(ProgramHandle, "TessLevelOuter");
+    Uniforms.NormalModel = glGetUniformLocation(ProgramHandle, "NormalModel");
+    Uniforms.Tesselation = glGetUniformLocation(ProgramHandle, "Tesselation");
+    Uniforms.Wireframe = glGetUniformLocation(ProgramHandle, "Wireframe");
 
     // Set up the projection matrix:
     const float HalfWidth = 0.6f;
@@ -368,7 +380,7 @@ static void LoadEffect()
     const char* tesSource = glswGetShader("Geodesic.TessEval");
     const char* gsSource = glswGetShader("Geodesic.Geometry");
     const char* fsSource = glswGetShader("Geodesic.Fragment");
-    const char* msg = "Can't find %s shader.  Does '../BicubicPath.glsl' exist?\n";
+    const char* msg = "Can't find %s shader.  Does '../Geodesic.glsl' exist?\n";
     PezCheckCondition(vsSource != 0, msg, "vertex");
     PezCheckCondition(tcsSource != 0, msg, "tess control");
     PezCheckCondition(tesSource != 0, msg, "tess eval");
@@ -429,12 +441,7 @@ static void LoadEffect()
 
 void PezUpdate(unsigned int elapsedMicroseconds)
 {
-  //    elapsedMicroseconds = 0;
-  //    const float RadiansPerMicrosecond = 0.0000005f;
-  // static float Theta = 0;
-  // Theta += elapsedMicroseconds * RadiansPerMicrosecond;
 
-    //    Vector3 rot = V3MakeFromElems(camAngleX, camAngleY, 0.0);
     Vector3 rot = V3MakeFromElems(0.0, camAngleY, camAngleX);
     Matrix4 rotation = M4MakeRotationZYX(rot);
  
@@ -449,10 +456,41 @@ void PezUpdate(unsigned int elapsedMicroseconds)
     const int VK_RIGHT = 0x27;
     const int VK_DOWN = 0x28;
 
+
+    /*
     if (PezIsPressing(VK_RIGHT)) TessLevelInner++;
     if (PezIsPressing(VK_LEFT))  TessLevelInner = TessLevelInner > 1 ? TessLevelInner - 1 : 1;
     if (PezIsPressing(VK_UP))    TessLevelOuter++;
     if (PezIsPressing(VK_DOWN))  TessLevelOuter = TessLevelOuter > 1 ? TessLevelOuter - 1 : 1;
+    */
+}
+
+
+void PezHandleKey(char key){
+  //std::cerr << "handling: " << key << std::endl;
+  switch(key){
+    // Normalmodels
+  case '0': // Vlacho
+    NormalModel = 0.0;
+    break;
+  case '1': // Casteljau
+    NormalModel = 1.0;
+    break;
+  case '2': // basic
+    NormalModel = 2.0;
+    break;
+  case 'w': // wireframe on/off
+    if (Wireframe>0.0) Wireframe = 0.0;
+    else Wireframe = 1.0;
+    break;
+  case 't': // tesselation on/off
+    if (Tesselation>0.0) Tesselation = 0.0;
+    else Tesselation = 1.0;
+    break;
+  default:
+    std::cerr << "can't handle key: " << key << std::endl;
+    
+  }
 }
 
 void PezHandleMouse(int x, int y, int action)

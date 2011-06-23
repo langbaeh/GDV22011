@@ -171,6 +171,7 @@ int main(int argc, char** argv)
                     break;
 
                 case KeyRelease:
+		  break;
                 case KeyPress: {
                     XComposeStatus composeStatus;
                     char asciiCode[32];
@@ -183,6 +184,8 @@ int main(int argc, char** argv)
                         case 0x1b:
                             done = 1;
                             break;
+		        default:
+			  PezHandleKey(asciiCode[0]);
                     }
                 }
             }

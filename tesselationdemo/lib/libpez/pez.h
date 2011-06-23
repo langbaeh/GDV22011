@@ -41,6 +41,7 @@ void PezFatalErrorW(const wchar_t* pStr, ...);
 void PezCheckCondition(int condition, ...);
 void PezCheckConditionW(int condition, ...);
 int PezIsPressing(char key);
+void PezHandleKey(char key);
 
 #ifdef __cplusplus
 }

@@ -24,6 +24,7 @@ out vec3 tcPosition[];
 out vec3 tcNormal[];
 uniform float TessLevelInner;
 uniform float TessLevelOuter;
+uniform float Tesselation;
 
 #define ID gl_InvocationID
 
@@ -33,6 +34,7 @@ void main()
     tcNormal[ID] = vNormal[ID];
        
 
+    if (Tesselation > 0.0){
 
     int m = (ID%3);
     int i = ID-m;	
@@ -45,11 +47,15 @@ void main()
        gl_TessLevelOuter[2] = ceil(d01*10);
        gl_TessLevelOuter[0] = ceil(d12*10);
        gl_TessLevelOuter[1] = ceil(d02*10);
-
-
-    if (ID == 0) {
-        gl_TessLevelInner[0] = max(gl_TessLevelOuter[2],max(gl_TessLevelOuter[1],gl_TessLevelOuter[0]));    
+      gl_TessLevelInner[0] = max(gl_TessLevelOuter[2],max(gl_TessLevelOuter[1],gl_TessLevelOuter[0]));    
+  
+    }else{
+	gl_TessLevelOuter[0] = 1;
+	gl_TessLevelOuter[1] = 1;
+	gl_TessLevelOuter[2] = 1;
+	gl_TessLevelInner[0] = 1;
     }
+
 }
 
 -- TessEval
@@ -62,6 +68,7 @@ out vec3 tePatchDistance;
 out vec3 teNormal;
 uniform mat4 Projection;
 uniform mat4 Modelview;
+uniform float NormalModel;
 
 void main()
 {
@@ -112,6 +119,8 @@ void main()
 	tePosition = phi.x*b100 + phi.y*b010 + phi.z*b001;
 
 
+	if (NormalModel == 0.0){
+
 // Vlacho
 	vec3 n200f = n0*phi.x*phi.x;
 	vec3 n020f = n1*phi.y*phi.y;
@@ -127,6 +136,7 @@ void main()
 
 
 	teNormal = normalize(n200f+n020f+n002f+n110f+n101f+n011f);
+	}else if (NormalModel == 1.0){
 // castelau
 
 	vec3 w = (b001-b100);
@@ -134,7 +144,18 @@ void main()
 
 
 	teNormal = normalize(cross(z,w));
+	}else {
+	    vec3 n110 = normalize(n0 + n1);
+	    vec3 n101 = normalize(n0 + n2);
+	    vec3 n011 = normalize(n1 + n2);
 
+	    vec3 n100 = phi.x*n0   + phi.y*n110 + phi.z*n101;
+	    vec3 n010 = phi.x*n110 + phi.y*n1   + phi.z*n011;
+	    vec3 n001 = phi.x*n101 + phi.y*n011 + phi.z*n2;
+
+	    teNormal = phi.x*n100 + phi.y*n010 + phi.z*n001;  
+	}
+    
     tePatchDistance = gl_TessCoord;
 
 
@@ -195,7 +216,7 @@ in float gPrimitive;
 uniform vec3 LightPosition;
 uniform vec3 DiffuseMaterial;
 uniform vec3 AmbientMaterial;
-const bool DrawLines = true;
+uniform float Wireframe;
 const vec3 InnerLineColor = vec3(1, 1, 1);
 
 float amplify(float d, float scale, float offset)
@@ -213,16 +234,13 @@ void main()
     float df = abs(dot(N, L));
     vec3 color = AmbientMaterial + df * DiffuseMaterial;
 
-if (DrawLines) {
+if (Wireframe > 0.0) {
         float d1 = min(min(gTriDistance.x, gTriDistance.y), gTriDistance.z);
         float d2 = min(min(gPatchDistance.x, gPatchDistance.y), gPatchDistance.z);
         d1 = 1 - amplify(d1, 50, -0.5);
         d2 = amplify(d2, 50, -0.5);
         color = d2 * color + d1 * d2 * InnerLineColor;
     }
-
- 
-
 
     FragColor = vec4(color, 1.0);
 }
