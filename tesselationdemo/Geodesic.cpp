@@ -29,6 +29,7 @@ typedef struct {
     GLuint NormalModel;
     GLuint Tesselation;
     GLuint Wireframe;
+    GLuint Tagg;
 } ShaderUniforms;
 
 static GLsizei IndexCount;
@@ -45,6 +46,7 @@ static float TessLevelOuter;
 static float NormalModel = 2.0;
 static float Tesselation = 0.0;
 static float Wireframe = 0.0;
+static float Tagg = 0.0;
 
 // Camera information
 Point3 eyePosition = P3MakeFromElems(0, 0, -10);
@@ -68,6 +70,7 @@ void PezRender(GLuint fbo)
     glUniform1f(Uniforms.NormalModel, NormalModel);
     glUniform1f(Uniforms.Tesselation, Tesselation);
     glUniform1f(Uniforms.Wireframe, Wireframe);
+    glUniform1f(Uniforms.Tagg, Tagg);
     
     Vector4 lightPosition = V4MakeFromElems(0.25, 0.25, 1, 0);
     glUniform3fv(Uniforms.LightPosition, 1, &lightPosition.x);
@@ -114,6 +117,7 @@ const char* PezInitialize(int width, int height)
     Uniforms.NormalModel = glGetUniformLocation(ProgramHandle, "NormalModel");
     Uniforms.Tesselation = glGetUniformLocation(ProgramHandle, "Tesselation");
     Uniforms.Wireframe = glGetUniformLocation(ProgramHandle, "Wireframe");
+    Uniforms.Tagg = glGetUniformLocation(ProgramHandle, "Tagg");
 
     // Set up the projection matrix:
     const float HalfWidth = 0.6f;
@@ -162,7 +166,7 @@ void CreateModel()
   std::cerr << nv << " " << nf << " " << ne << std::endl;
 
 
-  float Verts[6*nv];
+  float Verts[9*nv];
 
 
 
@@ -172,12 +176,15 @@ void CreateModel()
 
   for (int i = 0; i < nv; ++i)
   {
-    in >> Verts[i*6+0];
-    in >> Verts[i*6+1];
-    in >> Verts[i*6+2];
-    Verts[i*6+3] = 0.0;
-    Verts[i*6+4] = 0.0;
-    Verts[i*6+5] = 0.0;
+    in >> Verts[i*9+0];
+    in >> Verts[i*9+1];
+    in >> Verts[i*9+2];
+    Verts[i*9+3] = 0.0;
+    Verts[i*9+4] = 0.0;
+    Verts[i*9+5] = 0.0;
+    Verts[i*9+6] = 0.0;
+    Verts[i*9+7] = 0.0;
+    Verts[i*9+8] = 0.0;
 
     vmin[0] = std::min(Verts[i*3+0], vmin[0]);
     vmin[1] = std::min(Verts[i*3+1], vmin[1]);
@@ -195,13 +202,13 @@ void CreateModel()
   maxp = std::max(maxp,vmax[2]);
   for (int i = 0; i < nv; ++i)
     {
-      Verts[i*6+0] -= mp[0];
-      Verts[i*6+1] -= mp[1];
-      Verts[i*6+2] -= mp[2];
+      Verts[i*9+0] -= mp[0];
+      Verts[i*9+1] -= mp[1];
+      Verts[i*9+2] -= mp[2];
 
-      Verts[i*6+0] /= maxp;
-      Verts[i*6+1] /= maxp;
-      Verts[i*6+2] /= maxp;
+      Verts[i*9+0] /= maxp;
+      Verts[i*9+1] /= maxp;
+      Verts[i*9+2] /= maxp;
 
     }
   int Faces[3*nf];
@@ -230,9 +237,9 @@ void CreateModel()
 
 
     Vec3f v0, v1 ,v2;
-    v0 = Vec3f(Verts[id0*6+0],Verts[id0*6+1],Verts[id0*6+2] );
-    v1 = Vec3f(Verts[id1*6+0],Verts[id1*6+1],Verts[id1*6+2] );
-    v2 = Vec3f(Verts[id2*6+0],Verts[id2*6+1],Verts[id2*6+2] );
+    v0 = Vec3f(Verts[id0*9+0],Verts[id0*9+1],Verts[id0*9+2] );
+    v1 = Vec3f(Verts[id1*9+0],Verts[id1*9+1],Verts[id1*9+2] );
+    v2 = Vec3f(Verts[id2*9+0],Verts[id2*9+1],Verts[id2*9+2] );
 
     vec1 = v1 - v0;
     vec2 = v2 - v0;
@@ -241,18 +248,17 @@ void CreateModel()
 
 
     //    std::cerr << id0 << " " << id1 << " " << id2 << std::endl;
-    Verts[id0*6+3] += normal[0];
-    Verts[id0*6+4] += normal[1];
-    Verts[id0*6+5] += normal[2];
+    Verts[id0*9+3] += normal[0];
+    Verts[id0*9+4] += normal[1];
+    Verts[id0*9+5] += normal[2];
 
-    Verts[id1*6+3] += normal[0];
-    Verts[id1*6+4] += normal[1];
-    Verts[id1*6+5] += normal[2];
+    Verts[id1*9+3] += normal[0];
+    Verts[id1*9+4] += normal[1];
+    Verts[id1*9+5] += normal[2];
 
-    Verts[id2*6+3] += normal[0];
-    Verts[id2*6+4] += normal[1];
-    Verts[id2*6+5] += normal[2];
-
+    Verts[id2*9+3] += normal[0];
+    Verts[id2*9+4] += normal[1];
+    Verts[id2*9+5] += normal[2];
   }
 
   // Normalize normals.
@@ -260,19 +266,160 @@ void CreateModel()
     float s  = 0.0;
 
 
-    s+= Verts[i*6+3]*Verts[i*6+3];
-    s+= Verts[i*6+4]*Verts[i*6+4];
-    s+= Verts[i*6+5]*Verts[i*6+5];
+    s+= Verts[i*9+3]*Verts[i*9+3];
+    s+= Verts[i*9+4]*Verts[i*9+4];
+    s+= Verts[i*9+5]*Verts[i*9+5];
 
     s = -sqrt(s);
-    Verts[i*6+3] /= s;
-    Verts[i*6+4] /= s;
-    Verts[i*6+5] /= s;
+    Verts[i*9+3] /= s;
+    Verts[i*9+4] /= s;
+    Verts[i*9+5] /= s;
+
     //    std::cerr << Verts[i*6+3] << " "  << Verts[i*6+4] << " " << Verts[i*6+5] << std::endl;
   }
 
+
+  float normDist[nv];
+  for (int i = 0; i < nv; i++){
+    normDist[i] = 0.0;
+  }
+
+  // compute distance of face normals to averaged vertex normals
+ for (int i = 0; i < nf; i++)
+  {
+    Vec3f vec1, vec2, normal;
+    unsigned int id0, id1, id2;
+    id0 = Faces[i*3+0];
+    id1 = Faces[i*3+1];
+    id2 = Faces[i*3+2];
+
+
+    Vec3f v0, v1 ,v2;
+    v0 = Vec3f(Verts[id0*9+0],Verts[id0*9+1],Verts[id0*9+2] );
+    v1 = Vec3f(Verts[id1*9+0],Verts[id1*9+1],Verts[id1*9+2] );
+    v2 = Vec3f(Verts[id2*9+0],Verts[id2*9+1],Verts[id2*9+2] );
+
+    Vec3f n0, n1 ,n2;
+    n0 = Vec3f(Verts[id0*9+3],Verts[id0*9+4],Verts[id0*9+5] );
+    n1 = Vec3f(Verts[id1*9+3],Verts[id1*9+4],Verts[id1*9+5] );
+    n2 = Vec3f(Verts[id2*9+3],Verts[id2*9+4],Verts[id2*9+5] );
+
+    vec1 = v1 - v0;
+    vec2 = v2 - v0;
+
+     normal = vec1 ^ vec2; // cross product
+     //     std::cerr << normal[0] << " " << normal[1] << " " <<normal[2]  <<std::endl;
+     // std::cerr << vec1[0] << " " << vec1[1] << " " <<vec1[2]  <<std::endl;
+     // std::cerr << vec2[0] << " " << vec2[1] << " " << vec2[2]  <<std::endl;
+     normDist[id0] += (normal* n0) +1.0;
+     normDist[id1] += (normal* n1) + 1.0;
+     normDist[id2] += (normal* n2) + 1.0;
+
+  }
+ float DIST = 7.0;
+
+ for (int i = 0; i < nf; i++)
+  {
+    Vec3f vec1, vec2, normal;
+    unsigned int id0, id1, id2;
+    id0 = Faces[i*3+0];
+    id1 = Faces[i*3+1];
+    id2 = Faces[i*3+2];
+
+
+    Vec3f v0, v1 ,v2;
+    v0 = Vec3f(Verts[id0*9+0],Verts[id0*9+1],Verts[id0*9+2] );
+    v1 = Vec3f(Verts[id1*9+0],Verts[id1*9+1],Verts[id1*9+2] );
+    v2 = Vec3f(Verts[id2*9+0],Verts[id2*9+1],Verts[id2*9+2] );
+
+    Vec3f n0, n1 ,n2;
+    n0 = Vec3f(Verts[id0*9+3],Verts[id0*9+4],Verts[id0*9+5] );
+    n1 = Vec3f(Verts[id1*9+3],Verts[id1*9+4],Verts[id1*9+5] );
+    n2 = Vec3f(Verts[id2*9+3],Verts[id2*9+4],Verts[id2*9+5] );
+
+    Vec3f t0, t1, t2;
+    t0 = Vec3f(Verts[id0*9+6],Verts[id0*9+7],Verts[id0*9+8] );
+    t1 = Vec3f(Verts[id1*9+6],Verts[id1*9+7],Verts[id1*9+8] );
+    t2 = Vec3f(Verts[id2*9+6],Verts[id2*9+7],Verts[id2*9+8] );
+
+    vec1 = v1 - v0;
+    vec2 = v2 - v0;
+
+     normal = vec1 ^ vec2; // cross product
+     //     std::cerr << normal[0] << " " << normal[1] << " " <<normal[2]  <<std::endl;
+     // std::cerr << vec1[0] << " " << vec1[1] << " " <<vec1[2]  <<std::endl;
+     // std::cerr << vec2[0] << " " << vec2[1] << " " << vec2[2]  <<std::endl;
+     float t0l = t0.length();
+     float t1l = t1.length();
+     float t2l = t2.length();
+     int new0, new1;
+     new0 = -1;
+     new1 = -1;
+     if (normDist[id0] > DIST){
+       if (t0l == 0.0){
+	 if (t1l+t2l > 0.0){
+	   new0 = id0;
+	   if (normDist[id1] > normDist[id2] ){
+	     new1 = id1;
+	   }else{
+	     new1 = id2;
+	   }	   
+	 }
+	 if (t1l == 0.0 || t2l == 0.0){
+	   new0 = id0;
+	 }
+       }
+     }else if (normDist[id1] > DIST){
+       if (t1l == 0.0){
+	 if (t0l+t2l > 0.0){
+	   new0 = id1;
+	   if (normDist[id0] > normDist[id2] ){
+	     new1 = id0;
+	   }else{
+	     new1 = id2;
+	   }	   
+	 }
+	 if (t0l == 0.0 || t2l == 0.0){
+	   new0 = id1;
+	 }
+       }
+     }else if (normDist[id2] > DIST){
+       if (t2l == 0.0){
+	 if (t0l+t1l > 0.0){
+	   new0 = id2;
+	   if (normDist[id0] > normDist[id1] ){
+	     new1 = id0;
+	   }else{
+	     new1 = id1;
+	   }	   
+	 }
+	 if (t0l == 0.0 || t1l == 0.0){
+	   new0 = id2;
+	 }
+       }
+     }
+
+
+     if (new0 > 0){
+       Verts[new0*9+6] = Verts[new0*9+3];
+       Verts[new0*9+7] = Verts[new0*9+4];
+       Verts[new0*9+8] = Verts[new0*9+5];
+
+       Verts[new0*9+3] = normal.x;
+       Verts[new0*9+4] = normal.y;
+       Verts[new0*9+5] = normal.z;
+     }
+     if (new1 > 0){
+       
+       Verts[new1*9+3] = normal.x;
+       Verts[new1*9+4] = normal.y;
+       Verts[new1*9+5] = normal.z;
+     }
+  }
  
-  
+ // for (int i = 0; i < nv; i++){
+ //  std::cerr << normDist[i] <<std::endl;
+ //}
  
   IndexCount = sizeof(Faces)/sizeof(Faces[0]);
   //  std::cerr << IndexCount << std::endl;
@@ -322,8 +469,8 @@ static void CreateCube()
         };
 
     const float Verts[] = {
-      -1.0f, 1.0f, 1.0f,  -1.0f, 1.0f, 1.0f,  0.0f, 0.0f, 0.0f, 
-      -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, -1.0f,   0.0f, 0.0f, 0.0f, 
+      -1.0f, 1.0f, 1.0f,  -1.0f, 1.0f, 1.0f,  1.0f, 0.0f, 0.0f, 
+      -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, -1.0f,   1.0f, 0.0f, 0.0f, 
       1.0f, 1.0f, 1.0f,    1.0f, 1.0f, 1.0f,  0.0f, 0.0f, 0.0f, 
       1.0f, 1.0f, -1.0f,   1.0f, 1.0f, -1.0f,   0.0f, 0.0f, 0.0f, 
       -1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f,  
@@ -389,9 +536,9 @@ static void CreateIcosahedron()
         1, 6, 10 };
 
     const float Verts[] = {
-      0.000f,  0.000f, 1.000f,          0.894f,  0.000f,  0.447f,  0.000f,  0.000f, 1.000f,
-      0.894f,  0.000f,  0.447f,           0.894f,  0.000f,  0.447f, 0.000f,  0.000f,  1.000f,
-         0.276f,  0.851f,  0.447f,           0.276f,  0.851f,  0.447f, 0.000f,  0.000f, 0.000f,
+      0.000f,  0.000f, 1.000f,          0.000f,  0.000f,  1.000f, 0.0f,  0.000f,  1.0f,
+      0.894f,  0.000f,  0.447f,         0.894f,  0.000f,  0.447f, 0.000f,  0.000f,  1.000f, 
+         0.276f,  0.851f,  0.447f,      0.276f,  0.851f,  0.447f, 0.000f,  0.000f, 0.000f,
 	 -0.724f,  0.526f,  0.447f,  	 -0.724f,  0.526f,  0.447f, 0.000f,  0.000f, 0.000f,
 	 -0.724f, -0.526f,  0.447f,  	 -0.724f, -0.526f,  0.447f, 0.000f,  0.000f, 0.000f,
          0.276f, -0.851f,  0.447f,           0.276f, -0.851f,  0.447f, 0.000f,  0.000f, 0.000f,
@@ -552,6 +699,11 @@ void PezHandleKey(char key){
     if (Tesselation>0.0) Tesselation = 0.0;
     else Tesselation = 1.0;
     break;
+  case 'p': // tagged on/off
+    if (Tagg>0.0) { Tagg = 0.0; std::cerr << "tag off" << std::endl;}
+    else {Tagg = 1.0; std::cerr << "tag on" << std::endl;}
+    break;
+
   case '.':
     TessLevel++;
     break;

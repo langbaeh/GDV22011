@@ -24,9 +24,11 @@ in vec3 vNormal[];
 in vec3 vTag[];
 out vec3 tcPosition[];
 out vec3 tcNormal[];
+out vec3 tcColor[];
 uniform float TessLevel;
 uniform float TessLevelOuter;
 uniform float Tesselation;
+uniform float Tagg;
 
 #define ID gl_InvocationID
 
@@ -34,28 +36,14 @@ void main()
 {
     tcPosition[ID] = vPosition[ID];
     tcNormal[ID] = vNormal[ID];
-
+    tcColor[ID] = vec3(1.0,0.0,0.0);
     int m = (ID%3);
-    int i = ID-m;	
-
-    if ((vTag[ID].x != 0.0) && (vTag[ID].y != 0.0) && (vTag[ID].z != 0.0)){ 
-       // vertex is tagged !
-       int n = ((m+1)%3);
-       int p = ((m+2)%3);
-
-       if( (vTag[i+n].x != 0.0) && (vTag[i+n].y != 0.0) && (vTag[i+n].z != 0.0)){
-       	 tcNormal[ID] = vTag[ID]; // next one is tagged, need to change
-       }
-       //else if (vTag[i+n].x != 0.0) && (vTag[i+n].y != 0.0) && (vTag[i+n].z != 0.0){
-       
-       //}
-    }
-    tcNormal[ID] = normalize(tcNormal[ID]);
-
-    if (Tesselation > 0.0){ 
-
+    int i = ID-m;
     
-    // probably need to do this twice, to take care of cracks
+    tcNormal[ID] = normalize(tcNormal[ID]);
+    
+    if (Tesselation > 0.0){ 
+    
     float d01 = sqrt(1.0-(dot(tcNormal[i], tcNormal[i+1])+1.0)/2.0);
     float d02 = sqrt(1.0-(dot(tcNormal[i], tcNormal[i+2])+1.0)/2.0);
     float d12 = sqrt(1.0-(dot(tcNormal[i+1], tcNormal[i+2])+1.0)/2.0);
@@ -72,6 +60,38 @@ void main()
 	gl_TessLevelOuter[2] = 1;
 	gl_TessLevelInner[0] = 1;
     }
+    
+    if (Tagg > 0.0){
+    
+    if ((vTag[ID].x != 0.0) ||  (vTag[ID].y != 0.0) || (vTag[ID].z != 0.0)){ 
+       tcColor[ID] = vec3(0.0,0.0,1.0);
+       // vertex is tagged !
+       int n = ((m+1)%3);
+       int p = ((m+2)%3);
+
+       if( (vTag[i+n].x != 0.0) || (vTag[i+n].y != 0.0) || (vTag[i+n].z != 0.0)){
+       	 tcNormal[ID] = vTag[ID]; // next one is tagged, need to change
+       }else if ((vTag[i+n].x != 0.0) || (vTag[i+n].y != 0.0) || (vTag[i+n].z != 0.0)){
+       	     tcNormal[ID] = vNormal[ID];
+       }else{
+         tcNormal[ID] = vTag[ID]+vNormal[ID];
+       }
+    }
+    tcNormal[ID] = normalize(tcNormal[ID]);
+
+     if (Tesselation > 0.0){
+    float d01 = sqrt(1.0-(dot(tcNormal[i], tcNormal[i+1])+1.0)/2.0);
+    float d02 = sqrt(1.0-(dot(tcNormal[i], tcNormal[i+2])+1.0)/2.0);
+    float d12 = sqrt(1.0-(dot(tcNormal[i+1], tcNormal[i+2])+1.0)/2.0);
+
+
+       gl_TessLevelOuter[2] = max(gl_TessLevelOuter[2], ceil(d01*TessLevel));
+       gl_TessLevelOuter[0] = max(ceil(d12*TessLevel),gl_TessLevelOuter[0]);
+       gl_TessLevelOuter[1] = max(ceil(d02*TessLevel),gl_TessLevelOuter[1]);
+      gl_TessLevelInner[0] = max(max(gl_TessLevelOuter[2],max(gl_TessLevelOuter[1],gl_TessLevelOuter[0])), gl_TessLevelInner[0]);    
+  
+     }
+}
 
 }
 
@@ -80,9 +100,11 @@ void main()
 layout(triangles, equal_spacing, cw) in;
 in vec3 tcPosition[];
 in vec3 tcNormal[];
+in vec3 tcColor[];
 out vec3 tePosition;
 out vec3 tePatchDistance;
 out vec3 teNormal;
+out vec3 teColor;
 uniform mat4 Projection;
 uniform mat4 Modelview;
 uniform float NormalModel;
@@ -97,6 +119,10 @@ void main()
     vec3 n0 = tcNormal[0];
     vec3 n1 = tcNormal[1];
     vec3 n2 = tcNormal[2];
+
+    vec3 c0 = tcColor[0];
+    vec3 c1 = tcColor[1];
+    vec3 c2 = tcColor[2];
 
     vec3 phi = gl_TessCoord.xyz;
 
@@ -173,6 +199,15 @@ void main()
 	    teNormal = phi.x*n100 + phi.y*n010 + phi.z*n001;  
 	}
     
+    vec3 c110 = normalize(c0 + c1);
+    vec3 c101 = normalize(c0 + c2);
+    vec3 c011 = normalize(c1 + c2);
+    vec3 c100 = phi.x*c0   + phi.y*c110 + phi.z*c101;
+    vec3 c010 = phi.x*c110 + phi.y*c1   + phi.z*c011;
+    vec3 c001 = phi.x*c101 + phi.y*c011 + phi.z*c2;
+
+	    teColor = phi.x*c100 + phi.y*c010 + phi.z*c001;  
+
     tePatchDistance = gl_TessCoord;
 
 
@@ -189,9 +224,11 @@ layout(triangle_strip, max_vertices = 3) out;
 in vec3 tePosition[3];
 in vec3 tePatchDistance[3];
 in vec3 teNormal[3];
+in vec3 teColor[3];
 out vec3 gPatchDistance;
 out vec3 gTriDistance;
 out vec3 gNormal;
+out vec3 gColor;
 
 void main()
 {
@@ -205,19 +242,22 @@ void main()
     gPatchDistance = tePatchDistance[0];
     gTriDistance = vec3(1, 0, 0);
     gl_Position = gl_in[0].gl_Position; 
-    gNormal = NormalMatrix *teNormal[0]; 	
+    gNormal = NormalMatrix *teNormal[0];	
+    gColor = teColor[0];
     EmitVertex();
 	
     gPatchDistance = tePatchDistance[1];
     gTriDistance = vec3(0, 1, 0);
     gl_Position = gl_in[1].gl_Position;
     gNormal = NormalMatrix *teNormal[1]; 	
+    gColor = teColor[1];
     EmitVertex();
 
     gPatchDistance = tePatchDistance[2];
     gTriDistance = vec3(0, 0, 1);
     gl_Position = gl_in[2].gl_Position;
     gNormal = NormalMatrix *teNormal[2]; 	
+    gColor = teColor[2];
     EmitVertex();
 
     EndPrimitive();
@@ -229,6 +269,7 @@ out vec4 FragColor;
 in vec3 gNormal;
 in vec3 gTriDistance;
 in vec3 gPatchDistance;
+in vec3 gColor;
 in float gPrimitive;
 uniform vec3 LightPosition;
 uniform vec3 DiffuseMaterial;
@@ -249,8 +290,11 @@ void main()
     vec3 N = normalize(gNormal);
     vec3 L = LightPosition;
     float df = abs(dot(N, L));
-    vec3 color = AmbientMaterial + df * DiffuseMaterial;
-    color = (vec3(1)+N) / 2.0;
+   vec3 color = AmbientMaterial + df * gColor;// DiffuseMaterial;
+//   vec3 color = AmbientMaterial + df * DiffuseMaterial;
+
+//    color = (vec3(1)+N) / 2.0;
+
 if (Wireframe > 0.0) {
         float d1 = min(min(gTriDistance.x, gTriDistance.y), gTriDistance.z);
         float d2 = min(min(gPatchDistance.x, gPatchDistance.y), gPatchDistance.z);
@@ -259,7 +303,7 @@ if (Wireframe > 0.0) {
         color = d2 * color + d1 * d2 * InnerLineColor;
     }
 
-//    FragColor = vec4(color, 1.0);
+
     FragColor = vec4(color, 1.0);
 }
 
