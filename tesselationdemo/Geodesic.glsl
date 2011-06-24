@@ -5,14 +5,15 @@
 
 in vec3 Position;
 in vec3 Normal;
+in vec3 Tag;
 out vec3 vPosition;
 out vec3 vNormal;
-
+out vec3 vTag;
 void main()
 {
     vPosition = Position.xyz;
     vNormal = Normal.xyz;
-
+    vTag = Tag.xyz;
 }
 
 -- TessControl
@@ -20,6 +21,7 @@ void main()
 layout(vertices = 3) out;
 in vec3 vPosition[];
 in vec3 vNormal[];
+in vec3 vTag[];
 out vec3 tcPosition[];
 out vec3 tcNormal[];
 uniform float TessLevel;
@@ -32,13 +34,28 @@ void main()
 {
     tcPosition[ID] = vPosition[ID];
     tcNormal[ID] = vNormal[ID];
-       
-
-    if (Tesselation > 0.0){
 
     int m = (ID%3);
     int i = ID-m;	
 
+    if ((vTag[ID].x != 0.0) && (vTag[ID].y != 0.0) && (vTag[ID].z != 0.0)){ 
+       // vertex is tagged !
+       int n = ((m+1)%3);
+       int p = ((m+2)%3);
+
+       if( (vTag[i+n].x != 0.0) && (vTag[i+n].y != 0.0) && (vTag[i+n].z != 0.0)){
+       	 tcNormal[ID] = vTag[ID]; // next one is tagged, need to change
+       }
+       //else if (vTag[i+n].x != 0.0) && (vTag[i+n].y != 0.0) && (vTag[i+n].z != 0.0){
+       
+       //}
+    }
+    tcNormal[ID] = normalize(tcNormal[ID]);
+
+    if (Tesselation > 0.0){ 
+
+    
+    // probably need to do this twice, to take care of cracks
     float d01 = sqrt(1.0-(dot(tcNormal[i], tcNormal[i+1])+1.0)/2.0);
     float d02 = sqrt(1.0-(dot(tcNormal[i], tcNormal[i+2])+1.0)/2.0);
     float d12 = sqrt(1.0-(dot(tcNormal[i+1], tcNormal[i+2])+1.0)/2.0);
