@@ -24,7 +24,9 @@ in vec3 vNormal[];
 in vec3 vTag[];
 out vec3 tcPosition[];
 out vec3 tcNormal[];
+out vec3 tcTag[];
 out vec3 tcColor[];
+
 uniform float TessLevel;
 uniform float TessLevelOuter;
 uniform float Tesselation;
@@ -36,7 +38,8 @@ void main()
 {
     tcPosition[ID] = vPosition[ID];
     tcNormal[ID] = vNormal[ID];
-    tcColor[ID] = vec3(1.0,0.0,0.0);
+    tcColor[ID] = vec3(1.0,1.0,1.0);
+    tcTag[ID] = vTag[ID];
     int m = (ID%3);
     int i = ID-m;
     
@@ -64,15 +67,17 @@ void main()
     if (Tagg > 0.0){
     
     if ((vTag[ID].x != 0.0) ||  (vTag[ID].y != 0.0) || (vTag[ID].z != 0.0)){ 
-       tcColor[ID] = vec3(0.0,0.0,1.0);
+//       tcColor[ID] = vec3(0.0,0.0,1.0);
        // vertex is tagged !
        int n = ((m+1)%3);
        int p = ((m+2)%3);
 
        if( (vTag[i+n].x != 0.0) || (vTag[i+n].y != 0.0) || (vTag[i+n].z != 0.0)){
        	 tcNormal[ID] = vTag[ID]; // next one is tagged, need to change
+	 tcTag[ID] = vNormal[ID];
        }else if ((vTag[i+n].x != 0.0) || (vTag[i+n].y != 0.0) || (vTag[i+n].z != 0.0)){
        	     tcNormal[ID] = vNormal[ID];
+	     tcTag[ID] = vTag[ID];
        }else{
          tcNormal[ID] = vTag[ID]+vNormal[ID];
        }
@@ -101,6 +106,7 @@ layout(triangles, equal_spacing, cw) in;
 in vec3 tcPosition[];
 in vec3 tcNormal[];
 in vec3 tcColor[];
+in vec3 tcTag[];
 out vec3 tePosition;
 out vec3 tePatchDistance;
 out vec3 teNormal;
@@ -120,11 +126,40 @@ void main()
     vec3 n1 = tcNormal[1];
     vec3 n2 = tcNormal[2];
 
+
     vec3 c0 = tcColor[0];
     vec3 c1 = tcColor[1];
     vec3 c2 = tcColor[2];
 
     vec3 phi = gl_TessCoord.xyz;
+
+    if (((length(tcTag[1]) > 0.0f) || (length(tcTag[2]) > 0.0f)) && (phi[0] == 0.0)){
+       float pT = (1.0-phi[0]);
+       float pN = phi[0];
+
+       if(length(tcTag[1]) > 0.0f) n1 = normalize(pT*tcTag[1]+pN*tcNormal[1]);
+       if(length(tcTag[2]) > 0.0f) n2 = normalize(pT*tcTag[2]+pN*tcNormal[2]);
+       c1.x = 1.0; c1.y = 0.0; c1.z = 0.0;
+       c2.x = 1.0; c2.y = 0.0; c2.z = 0.0;
+    }
+
+    if (((length(tcTag[0]) > 0.0f) || (length(tcTag[2]) > 0.0f)) && (phi[1] == 0.0)){
+       float pT = (1.0-phi[1]);
+       float pN = phi[1];
+       if(length(tcTag[0]) > 0.0f)n0 = normalize(pT*tcTag[0]+pN*tcNormal[0]);
+       if(length(tcTag[2]) > 0.0f)n2 = normalize(pT*tcTag[2]+pN*tcNormal[2]);
+       c0.x = 0.0; c0.y = 1.0; c0.z = 0.0;
+       c2.x = 0.0; c2.y = 1.0; c2.z = 0.0;
+    }
+
+    if (((length(tcTag[1]) > 0.0f) || (length(tcTag[0]) > 0.0f)) && (phi[2] == 0.0)){
+       float pT = (1.0-phi[2]);
+       float pN = phi[2];
+       if(length(tcTag[1]) > 0.0f)n1 = normalize(pT*tcTag[1]+pN*tcNormal[1]);
+       if(length(tcTag[0]) > 0.0f)n0 = normalize(pT*tcTag[0]+pN*tcNormal[0]);
+       c1.x = 0.0; c1.y = 0.0; c1.z = 1.0;
+       c0.x = 0.0; c0.y = 0.0; c0.z = 1.0;
+    }
 
 	vec3 P01 = 1.0/3.0*(2.0*p0 + p1);
 	vec3 P10 = 1.0/3.0*(2.0*p1 + p0);
