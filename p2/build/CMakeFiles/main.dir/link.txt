@@ -1,0 +1,1 @@
+/usr/bin/c++    -Wl,-search_paths_first -Wl,-headerpad_max_install_names  CMakeFiles/main.dir/main.cpp.o CMakeFiles/main.dir/TriangleMesh.cpp.o CMakeFiles/main.dir/PNTriangles.cpp.o  -o main  -lGLEW -framework GLUT -framework Cocoa -framework AGL -framework OpenGL 
