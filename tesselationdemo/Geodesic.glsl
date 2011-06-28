@@ -6,14 +6,17 @@
 in vec3 Position;
 in vec3 Normal;
 in vec3 Tag;
+in vec3 Delta;
 out vec3 vPosition;
 out vec3 vNormal;
 out vec3 vTag;
+out vec3 vDelta;
 void main()
 {
     vPosition = Position.xyz;
     vNormal = Normal.xyz;
     vTag = Tag.xyz;
+    vDelta = Delta.xyz;
 }
 
 -- TessControl
@@ -21,9 +24,12 @@ void main()
 layout(vertices = 3) out;
 in vec3 vPosition[];
 in vec3 vNormal[];
+in vec3 vDelta[];
 in vec3 vTag[];
 out vec3 tcPosition[];
 out vec3 tcNormal[];
+out vec3 tcDelta[];
+out vec3 tcNormalMinus[];
 out vec3 tcTag[];
 out vec3 tcColor[];
 
@@ -38,6 +44,8 @@ void main()
 {
     tcPosition[ID] = vPosition[ID];
     tcNormal[ID] = vNormal[ID];
+    tcDelta[ID] = vDelta[ID];
+    tcNormalMinus[ID] = vDelta[ID];
     tcColor[ID] = vec3(1.0,1.0,1.0);
     tcTag[ID] = vTag[ID];
     int m = (ID%3);
@@ -51,13 +59,11 @@ void main()
     float d02 = sqrt(1.0-(dot(tcNormal[i], tcNormal[i+2])+1.0)/2.0);
     float d12 = sqrt(1.0-(dot(tcNormal[i+1], tcNormal[i+2])+1.0)/2.0);
 
-
        gl_TessLevelOuter[2] = ceil(d01*TessLevel);
        gl_TessLevelOuter[0] = ceil(d12*TessLevel);
        gl_TessLevelOuter[1] = ceil(d02*TessLevel);
       gl_TessLevelInner[0] = max(gl_TessLevelOuter[2],max(gl_TessLevelOuter[1],gl_TessLevelOuter[0]));    
-  
-    }else{
+     }else{
 	gl_TessLevelOuter[0] = 1;
 	gl_TessLevelOuter[1] = 1;
 	gl_TessLevelOuter[2] = 1;
@@ -67,36 +73,32 @@ void main()
     if (Tagg > 0.0){
     
     if ((vTag[ID].x != 0.0) ||  (vTag[ID].y != 0.0) || (vTag[ID].z != 0.0)){ 
-//       tcColor[ID] = vec3(0.0,0.0,1.0);
+       tcColor[ID] = vec3(0.0,0.0,1.0);
        // vertex is tagged !
        int n = ((m+1)%3);
        int p = ((m+2)%3);
 
        if( (vTag[i+n].x != 0.0) || (vTag[i+n].y != 0.0) || (vTag[i+n].z != 0.0)){
-       	 tcNormal[ID] = vTag[ID]; // next one is tagged, need to change
-	 tcTag[ID] = vNormal[ID];
-       }else if ((vTag[i+n].x != 0.0) || (vTag[i+n].y != 0.0) || (vTag[i+n].z != 0.0)){
-       	     tcNormal[ID] = vNormal[ID];
-	     tcTag[ID] = vTag[ID];
-       }else{
-         tcNormal[ID] = vTag[ID]+vNormal[ID];
+	 tcNormalMinus[ID] = vTag[ID].x*vNormal[ID]-vDelta[ID]; 
+
+       }else if ((vTag[i+p].x != 0.0) || (vTag[i+p].y != 0.0) || (vTag[i+p].z != 0.0)){
+	     tcNormalMinus[ID] = vTag[ID].x*vNormal[ID]+vDelta[ID];
        }
+      }
     }
-    tcNormal[ID] = normalize(tcNormal[ID]);
+
+    tcNormalMinus[ID] = normalize(tcNormalMinus[ID]);
 
      if (Tesselation > 0.0){
     float d01 = sqrt(1.0-(dot(tcNormal[i], tcNormal[i+1])+1.0)/2.0);
     float d02 = sqrt(1.0-(dot(tcNormal[i], tcNormal[i+2])+1.0)/2.0);
     float d12 = sqrt(1.0-(dot(tcNormal[i+1], tcNormal[i+2])+1.0)/2.0);
-
-
        gl_TessLevelOuter[2] = max(gl_TessLevelOuter[2], ceil(d01*TessLevel));
        gl_TessLevelOuter[0] = max(ceil(d12*TessLevel),gl_TessLevelOuter[0]);
        gl_TessLevelOuter[1] = max(ceil(d02*TessLevel),gl_TessLevelOuter[1]);
       gl_TessLevelInner[0] = max(max(gl_TessLevelOuter[2],max(gl_TessLevelOuter[1],gl_TessLevelOuter[0])), gl_TessLevelInner[0]);    
   
      }
-}
 
 }
 
@@ -105,6 +107,8 @@ void main()
 layout(triangles, equal_spacing, cw) in;
 in vec3 tcPosition[];
 in vec3 tcNormal[];
+in vec3 tcNormalMinus[];
+in vec3 tcDelta[];
 in vec3 tcColor[];
 in vec3 tcTag[];
 out vec3 tePosition;
@@ -114,6 +118,28 @@ out vec3 teColor;
 uniform mat4 Projection;
 uniform mat4 Modelview;
 uniform float NormalModel;
+
+float py(vec3 p, vec3 n, vec3 q){
+     return dot(-n, (q-p));
+}
+
+
+vec3 stitch(vec3 p, vec3 n, vec3 nt, vec3 de, vec3 tag, vec3 po, bool di){
+     vec3 d = p + (1.0f-tag[1])/3.0 * (po-p);
+     vec3 e = vec3(0);
+     if (di){
+     	// both are tagged
+	vec3 x = normalize((1.0f - tag[0])*n+tag[0]*nt);
+	e = py(p,x,d) * x;
+     }else{
+        // only one is tagged
+	e = py(p,n,d) * normalize(n + tag[2]*de);
+     }
+     return (d + e);
+}
+
+
+
 
 void main()
 {
@@ -126,40 +152,19 @@ void main()
     vec3 n1 = tcNormal[1];
     vec3 n2 = tcNormal[2];
 
+    vec3 nt0 = tcNormalMinus[0];
+    vec3 nt1 = tcNormalMinus[1];
+    vec3 nt2 = tcNormalMinus[2];
+
+    vec3 d0 = tcDelta[0];
+    vec3 d1 = tcDelta[1];
+    vec3 d2 = tcDelta[2];
 
     vec3 c0 = tcColor[0];
     vec3 c1 = tcColor[1];
     vec3 c2 = tcColor[2];
 
     vec3 phi = gl_TessCoord.xyz;
-
-    if (((length(tcTag[1]) > 0.0f) || (length(tcTag[2]) > 0.0f)) && (phi[0] == 0.0)){
-       float pT = (1.0-phi[0]);
-       float pN = phi[0];
-
-       if(length(tcTag[1]) > 0.0f) n1 = normalize(pT*tcTag[1]+pN*tcNormal[1]);
-       if(length(tcTag[2]) > 0.0f) n2 = normalize(pT*tcTag[2]+pN*tcNormal[2]);
-       c1.x = 1.0; c1.y = 0.0; c1.z = 0.0;
-       c2.x = 1.0; c2.y = 0.0; c2.z = 0.0;
-    }
-
-    if (((length(tcTag[0]) > 0.0f) || (length(tcTag[2]) > 0.0f)) && (phi[1] == 0.0)){
-       float pT = (1.0-phi[1]);
-       float pN = phi[1];
-       if(length(tcTag[0]) > 0.0f)n0 = normalize(pT*tcTag[0]+pN*tcNormal[0]);
-       if(length(tcTag[2]) > 0.0f)n2 = normalize(pT*tcTag[2]+pN*tcNormal[2]);
-       c0.x = 0.0; c0.y = 1.0; c0.z = 0.0;
-       c2.x = 0.0; c2.y = 1.0; c2.z = 0.0;
-    }
-
-    if (((length(tcTag[1]) > 0.0f) || (length(tcTag[0]) > 0.0f)) && (phi[2] == 0.0)){
-       float pT = (1.0-phi[2]);
-       float pN = phi[2];
-       if(length(tcTag[1]) > 0.0f)n1 = normalize(pT*tcTag[1]+pN*tcNormal[1]);
-       if(length(tcTag[0]) > 0.0f)n0 = normalize(pT*tcTag[0]+pN*tcNormal[0]);
-       c1.x = 0.0; c1.y = 0.0; c1.z = 1.0;
-       c0.x = 0.0; c0.y = 0.0; c0.z = 1.0;
-    }
 
 	vec3 P01 = 1.0/3.0*(2.0*p0 + p1);
 	vec3 P10 = 1.0/3.0*(2.0*p1 + p0);
@@ -178,6 +183,16 @@ void main()
 
 	vec3 b102 = P20 - dot(P20 - p2,n2)*n2;
 	vec3 b201 = P02 - dot(P02 - p0,n0)*n0;
+     
+        b210 = stitch(p0, n0,nt0,d0, tcTag[0], p1,((length(tcTag[0]) > 0.0f) && (length(tcTag[1]) > 0.0f)) );
+        b201 = stitch(p0, n0,nt0,d0, tcTag[0], p2, ((length(tcTag[0]) > 0.0f) && (length(tcTag[2]) > 0.0f)));
+
+        b120 = stitch(p1, n1,nt1,d1, tcTag[1], p0,((length(tcTag[0]) > 0.0f) && (length(tcTag[1]) > 0.0f)) );
+        b021 = stitch(p1, n1,nt1,d1, tcTag[1], p2, ((length(tcTag[1]) > 0.0f) && (length(tcTag[2]) > 0.0f)));
+
+        b102 = stitch(p2, n2,nt2,d2, tcTag[2], p0,((length(tcTag[0]) > 0.0f) && (length(tcTag[2]) > 0.0f)) );
+        b012 = stitch(p2, n2,nt2,d2, tcTag[2], p1, ((length(tcTag[1]) > 0.0f) && (length(tcTag[2]) > 0.0f)));
+
 
 	vec3 b111 = 0.25*(b210 + b120 + b201 + b102 + b021 + b012) - 1.0/6.0*(p0 + p1 + p2);
 
@@ -195,6 +210,9 @@ void main()
 	vec3 b001 = phi.x*b101 + phi.y*b011 + phi.z*b002;
 
 	tePosition = phi.x*b100 + phi.y*b010 + phi.z*b001;
+
+
+
 
 
 	if (NormalModel == 0.0){

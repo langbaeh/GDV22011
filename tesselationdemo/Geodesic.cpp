@@ -14,6 +14,7 @@
 
 static void CreateIcosahedron();
 static void CreateCube();
+static void CreateObject();
 static void LoadEffect();
 void CreateModel();
 
@@ -36,6 +37,7 @@ static GLsizei IndexCount;
 static const GLuint PositionSlot = 0;
 static const GLuint NormalSlot = 1;
 static const GLuint TagSlot = 2;
+static const GLuint DeltaSlot = 3;
 static GLuint ProgramHandle;
 static Matrix4 ProjectionMatrix;
 static Matrix4 ModelviewMatrix;
@@ -100,7 +102,8 @@ const char* PezInitialize(int width, int height)
 
 
     //    CreateIcosahedron();
-    CreateCube();
+    // CreateCube();
+    CreateObject();
     //    CreateModel();
 
 
@@ -449,6 +452,78 @@ void CreateModel()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Faces), Faces, GL_STATIC_DRAW);
 }
+
+
+static void CreateObject()
+{
+    const int Faces[] = {
+        0, 1, 2,
+        0, 2, 3,
+        0, 3, 4,
+        0, 4, 5,
+	0, 5, 6,
+	0, 6, 1,
+
+        7, 2, 1,
+        7, 3, 2,
+        7, 4, 3,
+        7, 5, 4,
+	7, 6, 5,
+	7, 1, 6,
+
+        };
+
+    float s = sin(60.0/180.0*M_PI);
+    float c = cos(60.0/180.0*M_PI);
+
+    const float Verts[] = {
+      0.0f, 0.0f, 2.0f,  0.0f, 0.0f, 1.0f,  0.0f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f,
+
+      -c, s, 0.0f, -c, s, 0.0f, 0.0f, 0.0f, 0.3f,10.0f, 0.0f, 0.0f,
+      c,  s, 0.0f, c, s, 0.0f,  0.0f, 0.0f, 0.3f,10.0f, 0.0f, 0.0f,
+
+      2.0*c, 0.0f, 0.0f, 1.0, 0.0f, 0.0f,  0.0f, 0.0f, 10.0f,1.0f, 0.0f, 0.0f,
+
+      c, -s, 0.0f,   c, -s, 0.0f, 0.0f, 0.0f, 0.3f,10.0f, 0.0f, 0.0f,
+      -c, -s, 0.0f,  -c, -s, 0.0f, 0.0f, 0.0f, 0.3f,10.0f, 0.0f, 0.0f,
+
+      -2*c, 0.0f, 0.0f, -1.0, 0.0f, 0.0f, 0.0f, 0.0f, 0.3f,10.0f, 0.0f, 0.0f,
+
+      0.0f, 0.0f, -2.0f,  0.0f, 0.0f, -1.0f,  0.0f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f,
+};
+ 
+    IndexCount = sizeof(Faces) / sizeof(Faces[0]);
+    std::cerr << IndexCount << std::endl;
+
+    // Create the VAO:
+    GLuint vao;
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+
+    // Create the VBO for positions:
+    GLuint positions;
+    GLsizei stride = 12 * sizeof(float);
+    glGenBuffers(1, &positions);
+    glBindBuffer(GL_ARRAY_BUFFER, positions);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Verts), Verts, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(PositionSlot);
+    glVertexAttribPointer(PositionSlot, 3, GL_FLOAT, GL_FALSE, stride, 0);
+    glEnableVertexAttribArray(NormalSlot);
+    glVertexAttribPointer(NormalSlot, 3, GL_FLOAT, GL_FALSE, stride, ((char *)NULL + 12));
+    glEnableVertexAttribArray(DeltaSlot);
+    glVertexAttribPointer(DeltaSlot, 3, GL_FLOAT, GL_FALSE, stride, ((char *)NULL + 24));
+    glEnableVertexAttribArray(TagSlot);
+    glVertexAttribPointer(TagSlot, 3, GL_FLOAT, GL_FALSE, stride, ((char *)NULL + 32));
+
+    // Create the VBO for indices:
+    GLuint indices;
+    glGenBuffers(1, &indices);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Faces), Faces, GL_STATIC_DRAW);
+}
+
+
+
 static void CreateCube()
 {
     const int Faces[] = {
@@ -643,6 +718,7 @@ static void LoadEffect()
     glBindAttribLocation(ProgramHandle, PositionSlot, "Position");
     glBindAttribLocation(ProgramHandle, NormalSlot, "Normal");
     glBindAttribLocation(ProgramHandle, TagSlot, "Tag");
+    glBindAttribLocation(ProgramHandle, DeltaSlot, "Delta");
     glLinkProgram(ProgramHandle);
     glGetProgramiv(ProgramHandle, GL_LINK_STATUS, &linkSuccess);
     glGetProgramInfoLog(ProgramHandle, sizeof(compilerSpew), 0, compilerSpew);
