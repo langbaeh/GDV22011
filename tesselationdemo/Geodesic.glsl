@@ -26,6 +26,7 @@ in vec3 vPosition[];
 in vec3 vNormal[];
 in vec3 vDelta[];
 in vec3 vTag[];
+
 out vec3 tcPosition[];
 out vec3 tcNormal[];
 out vec3 tcDelta[];
@@ -45,8 +46,10 @@ void main()
     tcPosition[ID] = vPosition[ID];
     tcNormal[ID] = vNormal[ID];
     tcDelta[ID] = vDelta[ID];
-    tcNormalMinus[ID] = vDelta[ID];
+    tcNormalMinus[ID] = vec3(0.0,1.0,0.0);
+
     tcColor[ID] = vec3(1.0,1.0,1.0);
+
     tcTag[ID] = vTag[ID];
     int m = (ID%3);
     int i = ID-m;
@@ -55,9 +58,9 @@ void main()
     
     if (Tesselation > 0.0){ 
     
-    float d01 = sqrt(1.0-(dot(tcNormal[i], tcNormal[i+1])+1.0)/2.0);
-    float d02 = sqrt(1.0-(dot(tcNormal[i], tcNormal[i+2])+1.0)/2.0);
-    float d12 = sqrt(1.0-(dot(tcNormal[i+1], tcNormal[i+2])+1.0)/2.0);
+    float d01 = sqrt(1.0-(dot(vNormal[i], vNormal[i+1])+1.0)/2.0);
+    float d02 = sqrt(1.0-(dot(vNormal[i], vNormal[i+2])+1.0)/2.0);
+    float d12 = sqrt(1.0-(dot(vNormal[i+1], vNormal[i+2])+1.0)/2.0);
 
        gl_TessLevelOuter[2] = ceil(d01*TessLevel);
        gl_TessLevelOuter[0] = ceil(d12*TessLevel);
@@ -72,18 +75,23 @@ void main()
     
     if (Tagg > 0.0){
     
-    if ((vTag[ID].x != 0.0) ||  (vTag[ID].y != 0.0) || (vTag[ID].z != 0.0)){ 
-       tcColor[ID] = vec3(0.0,0.0,1.0);
+    if (length(vTag[ID]) > 0.0){ 
+//       tcColor[ID] = vec3(0.0,0.0,1.0);
        // vertex is tagged !
        int n = ((m+1)%3);
        int p = ((m+2)%3);
 
-       if( (vTag[i+n].x != 0.0) || (vTag[i+n].y != 0.0) || (vTag[i+n].z != 0.0)){
-	 tcNormalMinus[ID] = vTag[ID].x*vNormal[ID]-vDelta[ID]; 
+       // compute face normals
+       vec3 fn = normalize(vNormal[i]+ vNormal[i+1]+ vNormal[i+2]);
 
-       }else if ((vTag[i+p].x != 0.0) || (vTag[i+p].y != 0.0) || (vTag[i+p].z != 0.0)){
-	     tcNormalMinus[ID] = vTag[ID].x*vNormal[ID]+vDelta[ID];
+       // compute dot product between face normals and delta
+       float dp = dot(fn, vDelta[ID]);
+       if (dp < 0.0){
+       	  tcNormalMinus[ID] = vNormal[ID]-vTag[ID].x*vDelta[ID];
+       }else{
+	  tcNormalMinus[ID] = vNormal[ID]+vTag[ID].x*vDelta[ID]; 
        }
+
       }
     }
 
@@ -118,24 +126,30 @@ out vec3 teColor;
 uniform mat4 Projection;
 uniform mat4 Modelview;
 uniform float NormalModel;
+uniform float Tagg;
 
 float py(vec3 p, vec3 n, vec3 q){
-     return dot(-n, (q-p));
+     return -dot(n, (q-p));
 }
 
 
-vec3 stitch(vec3 p, vec3 n, vec3 nt, vec3 de, vec3 tag, vec3 po, bool di){
-     vec3 d = p + (1.0f-tag[1])/3.0 * (po-p);
-     vec3 e = vec3(0);
-     if (di){
+vec3 stitch(vec3 p, vec3 n, vec3 nt, vec3 de, vec3 tag, vec3 po, vec3 tagT){
+
+     vec3 d = p + (1.0f-tag[1])/3.0f * (po-p);
+
+     vec3 e = py(p,n,d) * n;
+
+     if (length(tag)> 0.0 && length(tagT)> 0.0){
      	// both are tagged
-	vec3 x = normalize((1.0f - tag[0])*n+tag[0]*nt);
-	e = py(p,x,d) * x;
-     }else{
-        // only one is tagged
 	e = py(p,n,d) * normalize(n + tag[2]*de);
+     }else if (length(tag)> 0.0){
+        // only one is tagged
+	vec3 x = normalize((1.0f - tag[0])*n + tag[0]*nt);
+	e = py(p,x,d) * x;
      }
-     return (d + e);
+//     return (d + e);
+     return e;
+//     return d;
 }
 
 
@@ -183,16 +197,30 @@ void main()
 
 	vec3 b102 = P20 - dot(P20 - p2,n2)*n2;
 	vec3 b201 = P02 - dot(P02 - p0,n0)*n0;
-     
-        b210 = stitch(p0, n0,nt0,d0, tcTag[0], p1,((length(tcTag[0]) > 0.0f) && (length(tcTag[1]) > 0.0f)) );
-        b201 = stitch(p0, n0,nt0,d0, tcTag[0], p2, ((length(tcTag[0]) > 0.0f) && (length(tcTag[2]) > 0.0f)));
+	
 
-        b120 = stitch(p1, n1,nt1,d1, tcTag[1], p0,((length(tcTag[0]) > 0.0f) && (length(tcTag[1]) > 0.0f)) );
-        b021 = stitch(p1, n1,nt1,d1, tcTag[1], p2, ((length(tcTag[1]) > 0.0f) && (length(tcTag[2]) > 0.0f)));
 
-        b102 = stitch(p2, n2,nt2,d2, tcTag[2], p0,((length(tcTag[0]) > 0.0f) && (length(tcTag[2]) > 0.0f)) );
-        b012 = stitch(p2, n2,nt2,d2, tcTag[2], p1, ((length(tcTag[1]) > 0.0f) && (length(tcTag[2]) > 0.0f)));
+	if (Tagg > 0.0){
+	
+/*	b210 = stitch(p0, n0,nt0,d0, tcTag[0], p1, tcTag[1]);
+ 	b201 = stitch(p0, n0,nt0,d0, tcTag[0], p2, tcTag[2]);
+	b120 = stitch(p1, n1,nt1,d1, tcTag[1], p0, tcTag[0]);
+        b021 = stitch(p1, n1,nt1,d1, tcTag[1], p2, tcTag[2]);
+	b102 = stitch(p2, n2,nt2,d2, tcTag[2], p0, tcTag[0]);
+        b012 = stitch(p2, n2,nt2,d2, tcTag[2], p1, tcTag[1]);
+*/
 
+	c1 = stitch(p0, n0,nt0,d0, tcTag[0], p1, tcTag[1]);
+	c2 = stitch(p0, n0,nt0,d0, tcTag[0], p1, tcTag[1]);
+
+/* 	c1 = stitch(p0, n0,nt0,d0, tcTag[0], p2, tcTag[2]);
+	c2 = stitch(p1, n1,nt1,d1, tcTag[1], p0, tcTag[0]);
+       b021 = stitch(p1, n1,nt1,d1, tcTag[1], p2, tcTag[2]);
+	b102 = stitch(p2, n2,nt2,d2, tcTag[2], p0, tcTag[0]);
+        b012 = stitch(p2, n2,nt2,d2, tcTag[2], p1, tcTag[1]);
+*/
+	
+	}
 
 	vec3 b111 = 0.25*(b210 + b120 + b201 + b102 + b021 + b012) - 1.0/6.0*(p0 + p1 + p2);
 
