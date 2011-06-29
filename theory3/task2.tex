@@ -20,32 +20,46 @@ Fuer den Unterteilungsschritt muessen wir 16 neue Kontrollpunkte berechnen. Wir 
 Fuer fixe $v_0$:
 \begin{align}
 	&P_{20}(\frac{1}{4}) = \frac{1}{4} 
-	&P_{20}(\frac{3}{4}) = \frac{1}{4} \\
-	&P_{11}(\frac{1}{4}) = \frac{3}{4} 
-	&P_{11}(\frac{3}{4}) = \frac{3}{4} \\
-	&P_{02}(\frac{1}{4}) = \frac{1}{4} 	
-	&P_{02}(\frac{3}{4}) = \frac{1}{4} 
+	&P_{20}(\frac{3}{4}) = \frac{3}{4} \\
+	&P_{11}(\frac{1}{4}) = \frac{19}{32} 
+	&P_{11}(\frac{3}{4}) = \frac{19}{32} \\
+	&P_{02}(\frac{1}{4}) = \frac{3}{4} 	
+	&P_{02}(\frac{3}{4}) = \frac{1}{4} \\
+	&P_{20}(\frac{1}{2}) = \frac{1}{2}
+	&P_{11}(\frac{1}{2}) = \frac{5}{8} \\
+	&P_{02}(\frac{1}{2}) = \frac{1}{2}
 \end{align}
 Fuer fixe $u_0$:
 \begin{align}
 	&P_{20}(\frac{1}{4}) = \frac{1}{4} 
-	&P_{20}(\frac{3}{4}) = \frac{1}{4} \\
-	&P_{11}(\frac{1}{4}) = \frac{3}{4} 
-	&P_{11}(\frac{3}{4}) = \frac{3}{4} \\
-	&P_{02}(\frac{1}{4}) = \frac{1}{4} 	
-	&P_{02}(\frac{3}{4}) = \frac{1}{4} 
+	&P_{20}(\frac{3}{4}) = \frac{3}{4} \\
+	&P_{11}(\frac{1}{4}) = \frac{19}{32} 
+	&P_{11}(\frac{3}{4}) = \frac{19}{32} \\
+	&P_{02}(\frac{1}{4}) = \frac{3}{4} 	
+	&P_{02}(\frac{3}{4}) = \frac{1}{4}\\
+	&P_{20}(\frac{1}{2}) = \frac{1}{2}
+	&P_{11}(\frac{1}{2}) = \frac{5}{8} \\
+	&P_{02}(\frac{1}{2}) = \frac{1}{2} 
 \end{align}
-Die restlichen 4 Punkte folgen aus einem weiteren Schritt des de Casteljau:
+Die naechsten 4 Punkte folgen aus einem weiteren Schritt des de Casteljau:
 \begin{align}
-	&P(\frac{1}{4},\frac{1}{4}) = \frac{2}{3} 
-	&P(\frac{1}{4},\frac{3}{4}) = \frac{2}{3} \\
-	&P(\frac{3}{4},\frac{1}{4}) = \frac{2}{3} 
-	&P(\frac{3}{4},\frac{3}{4}) = \frac{2}{3} 
+	&P(\frac{1}{4},\frac{1}{4}) = \frac{105}{256} 
+	&P(\frac{1}{4},\frac{3}{4}) = \frac{105}{256} \\
+	&P(\frac{3}{4},\frac{1}{4}) = \frac{105}{256} 
+	&P(\frac{3}{4},\frac{3}{4}) = \frac{105}{256} 
 \end{align}
+
 Im jeweils ersten Schritt erhalten wir $\square$ und im zweiten Schritt $*$ \\
 \\
 \begin{center}
 \begin{pspicture}(-4,-4)(4,4) 
+	\psdots[linewidth= 2pt, dotstyle=square, dotscale=1.5](-4,-2)(-4,2)(-2,-4)(-2,0)(-2,4)
+										(0,-2)(0,2)
+										(4,-2)(4,2)(2,-4)(2,0)(2,4)
+										(0,0)(-4,0)(4,0)(0,4)(0,-4)
+										
+	\psdots[linewidth= 2pt, dotstyle=asterisk](-2,-2)(-2,2)(2,-2)(2,2)
+	
     \psline[linewidth=0.5 pt]{*-*}(0,0)(0,-4) 
     \psline[linewidth=0.5 pt]{*-*}(0,0)(0,4) 
     \psline[linewidth=0.5 pt]{*-*}(0,0)(-4,0) 
@@ -67,11 +81,6 @@ Im jeweils ersten Schritt erhalten wir $\square$ und im zweiten Schritt $*$ \\
     \uput[225](-4,-4){$b_{20,20}$}
     \uput[225](0,-4){$b_{11,20}$}
     \uput[225](4,-4){$b_{02,20}$}
-	\psdots[linewidth= 2pt, dotstyle=square](-4,-2)(-4,2)(-2,-4)(-2,0)(-2,4)
-										(0,-2)(0,2)
-										(4,-2)(4,2)(2,-4)(2,0)(2,4)
-										
-	\psdots[linewidth= 2pt, dotstyle=asterisk](-2,-2)(-2,2)(2,-2)(2,2)
 \end{pspicture}
 \end{center}
 

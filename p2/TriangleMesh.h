@@ -13,8 +13,15 @@
 
 #include <vector>
 #include "Vec3.h"
-#include <GL/glew.h>
-#include <GL/glut.h>
+
+#ifdef __APPLE__
+ #include <GL/glew.h>
+ #include <GLUT/glut.h>
+#else
+ #include <GL/glew.h>
+ #include <GL/glut.h>
+#endif
+
 //#include <GL/freeglut_ext.h>
 #include <fstream>
 #include <iostream>
