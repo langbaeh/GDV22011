@@ -476,18 +476,19 @@ static void CreateObject()
     float s = sin(60.0/180.0*M_PI);
     float c = cos(60.0/180.0*M_PI);
 
-    const float Verts[] = { // pos n nt delta
+
+    const float Verts[] = { // pos n delta tag
       0.0f, 0.0f, 2.0f,  0.0f, 0.0f, 1.0f,  0.0f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f,
 
-      -c, s, 0.0f,      -c, s, 0.0f,        0.0f,  0.0f, 10.0f, 1.0f, 0.0f, 1.0f,
-      c,  s, 0.0f,       c, s, 0.0f,        0.0f, 0.0f, 10.0f,  1.0f, 0.0f, 1.0f,
+      -c, s, 0.0f,      -c, s, 0.0f,        0.0f,  10.0f, 20.0f, 1.0f, -1.0f, 0.0f,
+      c,  s, 0.0f,       c, s, 0.0f,        0.0f, 10.0f, 20.0f,  1.0, -1.0f, 0.0f,
 
-      2.0*c, 0.0f, 0.0f, 1.0, 0.0f, 0.0f,   0.0f, 0.0f, 1.0f,  1.0f, 0.0f, -1.0f,
+      2.0*c, 0.0f, 0.0f, 1.0, 0.0f, 0.0f,   0.0f, 10.0f, 20.0f,  1.0f, -1.0f, 0.0f,
 
-      c, -s, 0.0f,       c, -s, 0.0f,       0.0f,  0.0f, 1.0f, 1.0f, 0.0f, -1.0f,
-      -c, -s, 0.0f,      -c, -s, 0.0f,      0.0f, 0.0f, 1.0f,   1.0f, 0.0f, 0.0f,
+      c, -s, 0.0f,       c, -s, 0.0f,       0.0f,  0.0f, 20.0f, 1.0f, -1.0f, 0.0f,
+      -c, -s, 0.0f,      -c, -s, 0.0f,      0.0f, 0.0f, 20.0f,   1.0f, -1.0f, 0.0f,
 
-      -2*c, 0.0f, 0.0f,  -1.0, 0.0f, 0.0f,  0.0f, 0.0f, 1.0f,    1.0f, 0.0f, 0.0f,
+      -2*c, 0.0f, 0.0f,  -1.0, 0.0f, 0.0f,  0.0f, 0.0f, 20.0f,    1.0f, -1.0f, 0.0f,
 
       0.0f, 0.0f, -2.0f,  0.0f, 0.0f, -1.0f,  0.0f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f,
 };
@@ -513,7 +514,7 @@ static void CreateObject()
     glEnableVertexAttribArray(DeltaSlot);
     glVertexAttribPointer(DeltaSlot, 3, GL_FLOAT, GL_FALSE, stride, ((char *)NULL + 24));
     glEnableVertexAttribArray(TagSlot);
-    glVertexAttribPointer(TagSlot, 3, GL_FLOAT, GL_FALSE, stride, ((char *)NULL + 32));
+    glVertexAttribPointer(TagSlot, 3, GL_FLOAT, GL_FALSE, stride, ((char *)NULL + 36));
 
     // Create the VBO for indices:
     GLuint indices;

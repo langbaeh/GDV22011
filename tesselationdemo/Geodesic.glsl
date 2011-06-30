@@ -51,6 +51,7 @@ void main()
     tcColor[ID] = vec3(1.0,1.0,1.0);
 
     tcTag[ID] = vTag[ID];
+
     int m = (ID%3);
     int i = ID-m;
     
@@ -119,6 +120,7 @@ in vec3 tcNormalMinus[];
 in vec3 tcDelta[];
 in vec3 tcColor[];
 in vec3 tcTag[];
+
 out vec3 tePosition;
 out vec3 tePatchDistance;
 out vec3 teNormal;
@@ -137,8 +139,10 @@ vec3 stitch(vec3 p, vec3 n, vec3 nt, vec3 de, vec3 tag, vec3 po, vec3 tagT){
 
      vec3 d = p + (1.0f-tag[1])/3.0f * (po-p);
 
+
      vec3 e = py(p,n,d) * n;
 
+  
      if (length(tag)> 0.0 && length(tagT)> 0.0){
      	// both are tagged
 	e = py(p,n,d) * normalize(n + tag[2]*de);
@@ -147,8 +151,10 @@ vec3 stitch(vec3 p, vec3 n, vec3 nt, vec3 de, vec3 tag, vec3 po, vec3 tagT){
 	vec3 x = normalize((1.0f - tag[0])*n + tag[0]*nt);
 	e = py(p,x,d) * x;
      }
-//     return (d + e);
-     return e;
+
+   return (d + e);
+
+//     return e;
 //     return d;
 }
 
@@ -198,27 +204,16 @@ void main()
 	vec3 b102 = P20 - dot(P20 - p2,n2)*n2;
 	vec3 b201 = P02 - dot(P02 - p0,n0)*n0;
 	
-
-
 	if (Tagg > 0.0){
 	
-/*	b210 = stitch(p0, n0,nt0,d0, tcTag[0], p1, tcTag[1]);
+	b210 = stitch(p0, n0,nt0,d0, tcTag[0], p1, tcTag[1]);
+
  	b201 = stitch(p0, n0,nt0,d0, tcTag[0], p2, tcTag[2]);
+
 	b120 = stitch(p1, n1,nt1,d1, tcTag[1], p0, tcTag[0]);
         b021 = stitch(p1, n1,nt1,d1, tcTag[1], p2, tcTag[2]);
 	b102 = stitch(p2, n2,nt2,d2, tcTag[2], p0, tcTag[0]);
         b012 = stitch(p2, n2,nt2,d2, tcTag[2], p1, tcTag[1]);
-*/
-
-	c1 = stitch(p0, n0,nt0,d0, tcTag[0], p1, tcTag[1]);
-	c2 = stitch(p0, n0,nt0,d0, tcTag[0], p1, tcTag[1]);
-
-/* 	c1 = stitch(p0, n0,nt0,d0, tcTag[0], p2, tcTag[2]);
-	c2 = stitch(p1, n1,nt1,d1, tcTag[1], p0, tcTag[0]);
-       b021 = stitch(p1, n1,nt1,d1, tcTag[1], p2, tcTag[2]);
-	b102 = stitch(p2, n2,nt2,d2, tcTag[2], p0, tcTag[0]);
-        b012 = stitch(p2, n2,nt2,d2, tcTag[2], p1, tcTag[1]);
-*/
 	
 	}
 
@@ -289,6 +284,7 @@ void main()
 
 	    teColor = phi.x*c100 + phi.y*c010 + phi.z*c001;  
 
+	    teColor = teNormal;
     tePatchDistance = gl_TessCoord;
 
 
