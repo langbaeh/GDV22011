@@ -76,8 +76,8 @@ void main()
     
     if (Tagg > 0.0){
     
-    if (length(vTag[ID]) > 0.0){ 
-//       tcColor[ID] = vec3(0.0,0.0,1.0);
+    if (length(vTag[ID]) > 0.000001){ 
+     
        // vertex is tagged !
        int n = ((m+1)%3);
        int p = ((m+2)%3);
@@ -88,8 +88,10 @@ void main()
        // compute dot product between face normals and delta
        float dp = dot(fn, vDelta[ID]);
        if (dp < 0.0){
+         tcColor[ID] = vec3(0.0,0.0,1.0);
        	  tcNormalMinus[ID] = vNormal[ID]-vTag[ID].x*vDelta[ID];
        }else{
+         tcColor[ID] = vec3(1.0,0.0,0.0);
 	  tcNormalMinus[ID] = vNormal[ID]+vTag[ID].x*vDelta[ID]; 
        }
 
@@ -109,6 +111,8 @@ void main()
   
      }
 
+
+	   
 }
 
 -- TessEval
@@ -139,9 +143,7 @@ vec3 stitch(vec3 p, vec3 n, vec3 nt, vec3 de, vec3 tag, vec3 po, vec3 tagT){
 
      vec3 d = p + (1.0f-tag[1])/3.0f * (po-p);
 
-
      vec3 e = py(p,n,d) * n;
-
   
      if (length(tag)> 0.0 && length(tagT)> 0.0){
      	// both are tagged
@@ -153,9 +155,6 @@ vec3 stitch(vec3 p, vec3 n, vec3 nt, vec3 de, vec3 tag, vec3 po, vec3 tagT){
      }
 
    return (d + e);
-
-//     return e;
-//     return d;
 }
 
 
@@ -284,7 +283,7 @@ void main()
 
 	    teColor = phi.x*c100 + phi.y*c010 + phi.z*c001;  
 
-	    teColor = teNormal;
+//	    teColor = teNormal;
     tePatchDistance = gl_TessCoord;
 
 

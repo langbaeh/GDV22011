@@ -103,8 +103,8 @@ const char* PezInitialize(int width, int height)
 
     //    CreateIcosahedron();
     // CreateCube();
-    CreateObject();
-    //    CreateModel();
+    //CreateObject();
+        CreateModel();
 
 
     LoadEffect();
@@ -138,20 +138,28 @@ const char* PezInitialize(int width, int height)
 void CreateModel()
 {
 
-
+std::cerr << "Loading model from OFF file"  << std::endl;
 
     std::istream& in = std::cin;
 
  int nv,nf,ne;
   char s[256];
   in >> s;
-
   bool noff = false;
+  bool doff = false;
 
-  if (s[0] == 'O' && s[1] == 'F' && s[2] == 'F')
+
+  if (s[0] == 'O' && s[1] == 'F' && s[2] == 'F'){
     ;
-  else if (s[0] == 'N' && s[1] == 'O' && s[2] == 'F' && s[3] == 'F')
+    std::cerr << "Computing new tags and deltas" <<std::endl;
+  }
+  else if (s[0] == 'N' && s[1] == 'O' && s[2] == 'F' && s[3] == 'F'){
     noff = true;
+  }
+  else if (s[0] == 'D' && s[1] == 'O' && s[2] == 'F' && s[3] == 'F'){
+    doff = true;
+    std::cerr << "Running with tags and deltas" <<std::endl;
+  }
   else{
     std::cerr << "BAD OFF HEADER "  << std::endl;
     return;
@@ -169,7 +177,7 @@ void CreateModel()
   std::cerr << nv << " " << nf << " " << ne << std::endl;
 
 
-  float Verts[9*nv];
+  float Verts[12*nv];
 
 
 
@@ -179,39 +187,66 @@ void CreateModel()
 
   for (int i = 0; i < nv; ++i)
   {
-    in >> Verts[i*9+0];
-    in >> Verts[i*9+1];
-    in >> Verts[i*9+2];
-    Verts[i*9+3] = 0.0;
-    Verts[i*9+4] = 0.0;
-    Verts[i*9+5] = 0.0;
-    Verts[i*9+6] = 0.0;
-    Verts[i*9+7] = 0.0;
-    Verts[i*9+8] = 0.0;
 
-    vmin[0] = std::min(Verts[i*3+0], vmin[0]);
-    vmin[1] = std::min(Verts[i*3+1], vmin[1]);
-    vmin[2] = std::min(Verts[i*3+2], vmin[2]);
+    in >> Verts[i*12+0];
+    in >> Verts[i*12+1];
+    in >> Verts[i*12+2];
+    if (doff){
+      in >> Verts[i*12+3];
+      in >> Verts[i*12+4];
+      in >> Verts[i*12+5];
 
-    vmax[0] = std::max(Verts[i*3+0], vmax[0]);
-    vmax[1] = std::max(Verts[i*3+1], vmax[1]);
-    vmax[2] = std::max(Verts[i*3+2], vmax[2]);
-    
+      in >> Verts[i*12+6];
+      in >> Verts[i*12+7];
+      in >> Verts[i*12+8];
+
+      in >> Verts[i*12+9];
+      in >> Verts[i*12+10];
+      in >> Verts[i*12+11];
+    }
+    else{
+      Verts[i*12+3] = 0.0;
+      Verts[i*12+4] = 0.0;
+      Verts[i*12+5] = 0.0;
+      Verts[i*12+6] = 0.0;
+      Verts[i*12+7] = 0.0;
+      Verts[i*12+8] = 0.0;
+      Verts[i*12+9] = 0.0; 
+      Verts[i*12+10] = 0.0;
+      Verts[i*12+11] = 0.0;
+    }
+
+
+
+
+    vmin[0] = std::min(Verts[i*12+0], vmin[0]);
+    vmin[1] = std::min(Verts[i*12+1], vmin[1]);
+    vmin[2] = std::min(Verts[i*12+2], vmin[2]);
+
+    vmax[0] = std::max(Verts[i*12+0], vmax[0]);
+    vmax[1] = std::max(Verts[i*12+1], vmax[1]);
+    vmax[2] = std::max(Verts[i*12+2], vmax[2]);
   }
+  /*  for (int i = 0; i < nv; ++i){
 
+    std::cerr << i << " : "<<Verts[i*12+0] << " " << Verts[i*12+1] << " " <<  Verts[i*12+2] << std::endl;
+    std::cerr << i << " : "<<Verts[i*12+3] << " " << Verts[i*12+4] << " " <<  Verts[i*12+5] << std::endl;
+    std::cerr << i << " : "<<Verts[i*12+6] << " " << Verts[i*12+7] << " " <<  Verts[i*12+8] << std::endl;
+    std::cerr << i << " : "<<Verts[i*12+9] << " " << Verts[i*12+10] << " " <<  Verts[i*12+11] << std::endl;
+    }*/
   Vec3f mp = (vmin + vmax)*0.5;
   vmax -= mp;
   float maxp = std::max(vmax[0],vmax[1]);
   maxp = std::max(maxp,vmax[2]);
   for (int i = 0; i < nv; ++i)
     {
-      Verts[i*9+0] -= mp[0];
-      Verts[i*9+1] -= mp[1];
-      Verts[i*9+2] -= mp[2];
+      Verts[i*12+0] -= mp[0];
+      Verts[i*12+1] -= mp[1];
+      Verts[i*12+2] -= mp[2];
 
-      Verts[i*9+0] /= maxp;
-      Verts[i*9+1] /= maxp;
-      Verts[i*9+2] /= maxp;
+      Verts[i*12+0] /= maxp;
+      Verts[i*12+1] /= maxp;
+      Verts[i*12+2] /= maxp;
 
     }
   int Faces[3*nf];
@@ -223,7 +258,7 @@ void CreateModel()
     in >> Faces[i*3+2];
     in >> Faces[i*3+1];
     in >> Faces[i*3+0];
-    //    std::cerr << Faces[i*3+0] << " " << Faces[i*3+1] << " " << Faces[i*3+2] << std::endl;
+    //        std::cerr << Faces[i*3+0] << " " << Faces[i*3+1] << " " << Faces[i*3+2] << std::endl;
  unsigned int id0 = Faces[i*3+0];
 
   }
@@ -240,9 +275,9 @@ void CreateModel()
 
 
     Vec3f v0, v1 ,v2;
-    v0 = Vec3f(Verts[id0*9+0],Verts[id0*9+1],Verts[id0*9+2] );
-    v1 = Vec3f(Verts[id1*9+0],Verts[id1*9+1],Verts[id1*9+2] );
-    v2 = Vec3f(Verts[id2*9+0],Verts[id2*9+1],Verts[id2*9+2] );
+    v0 = Vec3f(Verts[id0*12+0],Verts[id0*12+1],Verts[id0*12+2] );
+    v1 = Vec3f(Verts[id1*12+0],Verts[id1*12+1],Verts[id1*12+2] );
+    v2 = Vec3f(Verts[id2*12+0],Verts[id2*12+1],Verts[id2*12+2] );
 
     vec1 = v1 - v0;
     vec2 = v2 - v0;
@@ -251,17 +286,17 @@ void CreateModel()
 
 
     //    std::cerr << id0 << " " << id1 << " " << id2 << std::endl;
-    Verts[id0*9+3] += normal[0];
-    Verts[id0*9+4] += normal[1];
-    Verts[id0*9+5] += normal[2];
+    Verts[id0*12+3] += normal[0];
+    Verts[id0*12+4] += normal[1];
+    Verts[id0*12+5] += normal[2];
 
-    Verts[id1*9+3] += normal[0];
-    Verts[id1*9+4] += normal[1];
-    Verts[id1*9+5] += normal[2];
+    Verts[id1*12+3] += normal[0];
+    Verts[id1*12+4] += normal[1];
+    Verts[id1*12+5] += normal[2];
 
-    Verts[id2*9+3] += normal[0];
-    Verts[id2*9+4] += normal[1];
-    Verts[id2*9+5] += normal[2];
+    Verts[id2*12+3] += normal[0];
+    Verts[id2*12+4] += normal[1];
+    Verts[id2*12+5] += normal[2];
   }
 
   // Normalize normals.
@@ -269,14 +304,14 @@ void CreateModel()
     float s  = 0.0;
 
 
-    s+= Verts[i*9+3]*Verts[i*9+3];
-    s+= Verts[i*9+4]*Verts[i*9+4];
-    s+= Verts[i*9+5]*Verts[i*9+5];
+    s+= Verts[i*12+3]*Verts[i*12+3];
+    s+= Verts[i*12+4]*Verts[i*12+4];
+    s+= Verts[i*12+5]*Verts[i*12+5];
 
     s = -sqrt(s);
-    Verts[i*9+3] /= s;
-    Verts[i*9+4] /= s;
-    Verts[i*9+5] /= s;
+    Verts[i*12+3] /= s;
+    Verts[i*12+4] /= s;
+    Verts[i*12+5] /= s;
 
     //    std::cerr << Verts[i*6+3] << " "  << Verts[i*6+4] << " " << Verts[i*6+5] << std::endl;
   }
@@ -287,142 +322,210 @@ void CreateModel()
     normDist[i] = 0.0;
   }
 
-  // compute distance of face normals to averaged vertex normals
- for (int i = 0; i < nf; i++)
-  {
-    Vec3f vec1, vec2, normal;
-    unsigned int id0, id1, id2;
-    id0 = Faces[i*3+0];
-    id1 = Faces[i*3+1];
-    id2 = Faces[i*3+2];
-
-
-    Vec3f v0, v1 ,v2;
-    v0 = Vec3f(Verts[id0*9+0],Verts[id0*9+1],Verts[id0*9+2] );
-    v1 = Vec3f(Verts[id1*9+0],Verts[id1*9+1],Verts[id1*9+2] );
-    v2 = Vec3f(Verts[id2*9+0],Verts[id2*9+1],Verts[id2*9+2] );
-
-    Vec3f n0, n1 ,n2;
-    n0 = Vec3f(Verts[id0*9+3],Verts[id0*9+4],Verts[id0*9+5] );
-    n1 = Vec3f(Verts[id1*9+3],Verts[id1*9+4],Verts[id1*9+5] );
-    n2 = Vec3f(Verts[id2*9+3],Verts[id2*9+4],Verts[id2*9+5] );
-
-    vec1 = v1 - v0;
-    vec2 = v2 - v0;
-
-     normal = vec1 ^ vec2; // cross product
-     //     std::cerr << normal[0] << " " << normal[1] << " " <<normal[2]  <<std::endl;
-     // std::cerr << vec1[0] << " " << vec1[1] << " " <<vec1[2]  <<std::endl;
+  if (!doff){
+    // compute distance of face normals to averaged vertex normals
+    std::cerr<< "computing distances" << std::endl;
+    for (int i = 0; i < nf; i++)
+      {
+	Vec3f vec1, vec2, normal;
+	unsigned int id0, id1, id2;
+	id0 = Faces[i*3+0];
+	id1 = Faces[i*3+1];
+	id2 = Faces[i*3+2];
+	
+	
+	Vec3f v0, v1 ,v2;
+	v0 = Vec3f(Verts[id0*12+0],Verts[id0*12+1],Verts[id0*12+2] );
+	v1 = Vec3f(Verts[id1*12+0],Verts[id1*12+1],Verts[id1*12+2] );
+	v2 = Vec3f(Verts[id2*12+0],Verts[id2*12+1],Verts[id2*12+2] );
+	
+	Vec3f n0, n1 ,n2;
+	n0 = Vec3f(Verts[id0*12+3],Verts[id0*12+4],Verts[id0*12+5] );
+	n1 = Vec3f(Verts[id1*12+3],Verts[id1*12+4],Verts[id1*12+5] );
+	n2 = Vec3f(Verts[id2*12+3],Verts[id2*12+4],Verts[id2*12+5] );
+	
+	vec1 = v1 - v0;
+	vec2 = v2 - v0;
+	
+	normal = vec1 ^ vec2; // cross product
+	normal.normalize();
+	//     std::cerr << normal[0] << " " << normal[1] << " " <<normal[2]  <<std::endl;
+	// std::cerr << vec1[0] << " " << vec1[1] << " " <<vec1[2]  <<std::endl;
      // std::cerr << vec2[0] << " " << vec2[1] << " " << vec2[2]  <<std::endl;
-     normDist[id0] += (normal* n0) +1.0;
-     normDist[id1] += (normal* n1) + 1.0;
-     normDist[id2] += (normal* n2) + 1.0;
-
+	normDist[id0] += (normal* n0) + 1.0;
+	normDist[id1] += (normal* n1) + 1.0;
+	normDist[id2] += (normal* n2) + 1.0;
+      }
+    
+    Vec3f strongEdge[nv];
+    float edgestrengh[nv];
+    // SLOW !!!
+    for (int v = 0; v < nv; v++){
+      edgestrengh[v]  = 100000.0;
+      for (int i = 0; i < nf; i++){
+	unsigned int id0, id1, id2;
+	id0 = Faces[i*3+0];
+	id1 = Faces[i*3+1];
+	id2 = Faces[i*3+2];
+	
+	if (id0 == v || id1 == v || id2 == v){
+	  Vec3f v0, v1 ,v2;
+	  v0 = Vec3f(Verts[id0*12+0],Verts[id0*12+1],Verts[id0*12+2] );
+	  v1 = Vec3f(Verts[id1*12+0],Verts[id1*12+1],Verts[id1*12+2] );
+	  v2 = Vec3f(Verts[id2*12+0],Verts[id2*12+1],Verts[id2*12+2] );
+	  Vec3f vec1 = v1 - v0;
+	  Vec3f vec2 = v2 - v0;
+	  
+	  Vec3f normal = vec1 ^ vec2; // cross product
+	  Vec3f n = Vec3f(Verts[v*12+3],Verts[v*12+4],Verts[v*12+5] );
+	  float s = (normal* n) + 1.0;
+	  
+	  if (s < edgestrengh[v]){
+	    edgestrengh[v] = s;
+	    if (v == id1){
+	      strongEdge[v] = vec1;
+	    }else if (v == id2){
+	      strongEdge[v] = vec2;
+	    }else{
+	      strongEdge[v] = v0-v1;
+	    }
+	  }
+	}
+	
+	
+      }
+    }
+    
+    
+    
+    float DIST = 1.0;
+    
+    for (int i = 0; i < nf; i++)
+      {
+	Vec3f vec1, vec2, normal;
+	unsigned int id0, id1, id2;
+	id0 = Faces[i*3+0];
+	id1 = Faces[i*3+1];
+	id2 = Faces[i*3+2];
+	
+	
+	Vec3f v0, v1 ,v2;
+	v0 = Vec3f(Verts[id0*12+0],Verts[id0*12+1],Verts[id0*12+2] );
+	v1 = Vec3f(Verts[id1*12+0],Verts[id1*12+1],Verts[id1*12+2] );
+	v2 = Vec3f(Verts[id2*12+0],Verts[id2*12+1],Verts[id2*12+2] );
+	
+	Vec3f n0, n1 ,n2;
+	n0 = Vec3f(Verts[id0*12+3],Verts[id0*12+4],Verts[id0*12+5] );
+	n1 = Vec3f(Verts[id1*12+3],Verts[id1*12+4],Verts[id1*12+5] );
+	n2 = Vec3f(Verts[id2*12+3],Verts[id2*12+4],Verts[id2*12+5] );
+	
+	Vec3f t0, t1, t2;
+	t0 = Vec3f(Verts[id0*12+9],Verts[id0*12+10],Verts[id0*12+11] );
+	t1 = Vec3f(Verts[id1*12+9],Verts[id1*12+10],Verts[id1*12+11] );
+	t2 = Vec3f(Verts[id2*12+9],Verts[id2*12+10],Verts[id2*12+11] );
+	
+	
+	
+	//     std::cerr << normal[0] << " " << normal[1] << " " <<normal[2]  <<std::endl;
+	// std::cerr << vec1[0] << " " << vec1[1] << " " <<vec1[2]  <<std::endl;
+	// std::cerr << vec2[0] << " " << vec2[1] << " " << vec2[2]  <<std::endl;
+	
+	float t0l = t0.length();
+	float t1l = t1.length();
+	float t2l = t2.length();
+	int new0, new1;
+	new0 = -1;
+	new1 = -1;
+	//     std::cerr << t0l << " " << t1l << " " << t2l  <<std::endl;
+	
+	if (normDist[id0] > DIST && t0l == 0.0){
+	  // not tagged yet
+	  if (t1l > 0.0 && t2l > 0.0){
+	    // two neighbours are already tagged, can't tag third
+	    ;
+	  }else{
+	    // only one of the neighbors is tagged
+	    new1 = id0;
+	    if (normDist[id1] > normDist[id2] ){
+	      new0 = id1;
+	    }else{
+	      new0 = id2;
+	    }
+	  }
+	}else if (normDist[id1] > DIST && t1l == 0.0){
+	  // not tagged yet
+	  if (t0l > 0.0 && t2l > 0.0){
+	 // two neighbours are already tagged, can't tag third
+	    ;
+	  }else{
+	    // only one of the neighbors is tagged
+	    new1 = id1;
+	    if (normDist[id0] > normDist[id2] ){
+	      new0 = id0;
+	    }else{
+	      new0 = id2;
+	    }
+	  }
+	}else if (normDist[id2] > DIST && t2l == 0.0){
+	  // not tagged yet
+	  if (t1l > 0.0 && t0l > 0.0){
+	    // two neighbours are already tagged, can't tag third
+	    ;
+	  }else{
+	    // only one of the neighbors is tagged
+	    new1 = id2;
+	    if (normDist[id1] > normDist[id0] ){
+	      new0 = id1;
+	    }else{
+	      new0 = id0;
+	    }
+	  }
+	}
+	
+	if( normDist[new0] < normDist[new1]){
+	  int b = new0;
+	  new0 = new1;
+	  new1 = b;
+	  
+	}
+	
+	if (new1 > 0 && new0 > 0 ){	 
+	  Vec3f tn1 = Vec3f(Verts[new1*12+3],Verts[new1*12+4],Verts[new1*12+5] );
+	  
+	  
+	  Vec3f delta = (tn1^strongEdge[new0]);
+	  delta.normalize();
+	  //	 std::cerr << "Tagging "  << new0 << " " << new1 << std::endl;
+	  //std::cerr << delta[0] << " " << delta[1] << " " << delta[2]  << std::endl;
+	  if (normDist[new0] > DIST){
+	    Verts[new0*12+6] = delta[0];
+	    Verts[new0*12+7] = delta[1];
+	    Verts[new0*12+8] = delta[2];
+	    
+	    Verts[new0*12+9] = 1.0;
+	    Verts[new0*12+10] = -1.0;
+	    Verts[new0*12+11] = -1.0;
+	  }
+	  if (normDist[new0] > DIST){
+	    Verts[new1*12+6] = delta[0];
+	    Verts[new1*12+7] = delta[1];
+	    Verts[new1*12+8] = delta[2];
+	    
+	    Verts[new1*12+9] = 1.0;
+	    Verts[new1*12+10] = -1.0;
+	    Verts[new1*12+11] = -1.0;
+	  }
+	}
+      }
   }
- float DIST = 7.0;
-
- for (int i = 0; i < nf; i++)
-  {
-    Vec3f vec1, vec2, normal;
-    unsigned int id0, id1, id2;
-    id0 = Faces[i*3+0];
-    id1 = Faces[i*3+1];
-    id2 = Faces[i*3+2];
-
-
-    Vec3f v0, v1 ,v2;
-    v0 = Vec3f(Verts[id0*9+0],Verts[id0*9+1],Verts[id0*9+2] );
-    v1 = Vec3f(Verts[id1*9+0],Verts[id1*9+1],Verts[id1*9+2] );
-    v2 = Vec3f(Verts[id2*9+0],Verts[id2*9+1],Verts[id2*9+2] );
-
-    Vec3f n0, n1 ,n2;
-    n0 = Vec3f(Verts[id0*9+3],Verts[id0*9+4],Verts[id0*9+5] );
-    n1 = Vec3f(Verts[id1*9+3],Verts[id1*9+4],Verts[id1*9+5] );
-    n2 = Vec3f(Verts[id2*9+3],Verts[id2*9+4],Verts[id2*9+5] );
-
-    Vec3f t0, t1, t2;
-    t0 = Vec3f(Verts[id0*9+6],Verts[id0*9+7],Verts[id0*9+8] );
-    t1 = Vec3f(Verts[id1*9+6],Verts[id1*9+7],Verts[id1*9+8] );
-    t2 = Vec3f(Verts[id2*9+6],Verts[id2*9+7],Verts[id2*9+8] );
-
-    vec1 = v1 - v0;
-    vec2 = v2 - v0;
-
-     normal = vec1 ^ vec2; // cross product
-     //     std::cerr << normal[0] << " " << normal[1] << " " <<normal[2]  <<std::endl;
-     // std::cerr << vec1[0] << " " << vec1[1] << " " <<vec1[2]  <<std::endl;
-     // std::cerr << vec2[0] << " " << vec2[1] << " " << vec2[2]  <<std::endl;
-     float t0l = t0.length();
-     float t1l = t1.length();
-     float t2l = t2.length();
-     int new0, new1;
-     new0 = -1;
-     new1 = -1;
-     if (normDist[id0] > DIST){
-       if (t0l == 0.0){
-	 if (t1l+t2l > 0.0){
-	   new0 = id0;
-	   if (normDist[id1] > normDist[id2] ){
-	     new1 = id1;
-	   }else{
-	     new1 = id2;
-	   }	   
-	 }
-	 if (t1l == 0.0 || t2l == 0.0){
-	   new0 = id0;
-	 }
-       }
-     }else if (normDist[id1] > DIST){
-       if (t1l == 0.0){
-	 if (t0l+t2l > 0.0){
-	   new0 = id1;
-	   if (normDist[id0] > normDist[id2] ){
-	     new1 = id0;
-	   }else{
-	     new1 = id2;
-	   }	   
-	 }
-	 if (t0l == 0.0 || t2l == 0.0){
-	   new0 = id1;
-	 }
-       }
-     }else if (normDist[id2] > DIST){
-       if (t2l == 0.0){
-	 if (t0l+t1l > 0.0){
-	   new0 = id2;
-	   if (normDist[id0] > normDist[id1] ){
-	     new1 = id0;
-	   }else{
-	     new1 = id1;
-	   }	   
-	 }
-	 if (t0l == 0.0 || t1l == 0.0){
-	   new0 = id2;
-	 }
-       }
-     }
-
-
-     if (new0 > 0){
-       Verts[new0*9+6] = Verts[new0*9+3];
-       Verts[new0*9+7] = Verts[new0*9+4];
-       Verts[new0*9+8] = Verts[new0*9+5];
-
-       Verts[new0*9+3] = normal.x;
-       Verts[new0*9+4] = normal.y;
-       Verts[new0*9+5] = normal.z;
-     }
-     if (new1 > 0){
-       
-       Verts[new1*9+3] = normal.x;
-       Verts[new1*9+4] = normal.y;
-       Verts[new1*9+5] = normal.z;
-     }
+  
+  // crack prevention
+  for (int i = 0; i < nv; i++){
+    //    std::cerr << Verts[i*12+9] << " " << Verts[i*12+10] << " " <<  Verts[i*12+11] << std::endl;
+    if ((Verts[i*12+9]+Verts[i*12+10] + Verts[i*12+11]) == 0.0){
+      Verts[i*12+9] = 0.00000001;
+    }
   }
- 
- // for (int i = 0; i < nv; i++){
- //  std::cerr << normDist[i] <<std::endl;
- //}
  
   IndexCount = sizeof(Faces)/sizeof(Faces[0]);
   //  std::cerr << IndexCount << std::endl;
@@ -433,7 +536,7 @@ void CreateModel()
 
     // Create the VBO for positions:
     GLuint positions;
-    GLsizei stride = 9 * sizeof(float);
+    GLsizei stride = 12 * sizeof(float);
     // std::cerr <<  sizeof(Verts) << " " <<  sizeof(Verts)/(6*sizeof(float)) <<std::endl;
     //std::cerr <<  sizeof(Faces) << " " <<  sizeof(Faces)/(3*sizeof(int)) <<std::endl;
     glGenBuffers(1, &positions);
@@ -443,8 +546,10 @@ void CreateModel()
     glVertexAttribPointer(PositionSlot, 3, GL_FLOAT, GL_FALSE, stride, 0);
     glEnableVertexAttribArray(NormalSlot);
     glVertexAttribPointer(NormalSlot, 3, GL_FLOAT, GL_FALSE, stride, ((char *)NULL + 12));
+    glEnableVertexAttribArray(DeltaSlot);
+    glVertexAttribPointer(DeltaSlot, 3, GL_FLOAT, GL_FALSE, stride, ((char *)NULL + 24));
     glEnableVertexAttribArray(TagSlot);
-    glVertexAttribPointer(TagSlot, 3, GL_FLOAT, GL_FALSE, stride, ((char *)NULL + 24));
+    glVertexAttribPointer(TagSlot, 3, GL_FLOAT, GL_FALSE, stride, ((char *)NULL + 36));
 
     // Create the VBO for indices:
     GLuint indices;
@@ -565,7 +670,7 @@ static void CreateCube()
 
     // Create the VBO for positions:
     GLuint positions;
-    GLsizei stride = 9 * sizeof(float);
+    GLsizei stride = 12 * sizeof(float);
     glGenBuffers(1, &positions);
     glBindBuffer(GL_ARRAY_BUFFER, positions);
     glBufferData(GL_ARRAY_BUFFER, sizeof(Verts), Verts, GL_STATIC_DRAW);
