@@ -246,13 +246,14 @@ std::cerr << "Loading model from OFF file"  << std::endl;
     vmax[1] = std::max(Verts[i*12+1], vmax[1]);
     vmax[2] = std::max(Verts[i*12+2], vmax[2]);
   }
+  /*
     for (int i = 0; i < nv; ++i){
 
     std::cerr << i << " : "<<Verts[i*12+0] << " " << Verts[i*12+1] << " " <<  Verts[i*12+2] << std::endl;
     std::cerr << i << " : "<<Verts[i*12+3] << " " << Verts[i*12+4] << " " <<  Verts[i*12+5] << std::endl;
     std::cerr << i << " : "<<Verts[i*12+6] << " " << Verts[i*12+7] << " " <<  Verts[i*12+8] << std::endl;
     std::cerr << i << " : "<<Verts[i*12+9] << " " << Verts[i*12+10] << " " <<  Verts[i*12+11] << std::endl;
-    }
+    }*/
   Vec3f mp = (vmin + vmax)*0.5;
   vmax -= mp;
   float maxp = std::max(vmax[0],vmax[1]);
@@ -542,247 +543,18 @@ std::cerr << "Loading model from OFF file"  << std::endl;
   
   // crack prevention
   for (int i = 0; i < nv; i++){
-            std::cerr << Verts[i*12+9] << " " << Verts[i*12+10] << " " <<  Verts[i*12+11] << std::endl;
+    //            std::cerr << Verts[i*12+9] << " " << Verts[i*12+10] << " " <<  Verts[i*12+11] << std::endl;
 	if ((fabs(Verts[i*12+9])+fabs(Verts[i*12+10])+fabs(Verts[i*12+11])) == 0.0){
       Verts[i*12+9] = 0.00000001;
     }
 	//        std::cerr << Verts[i*12+9] << " " << Verts[i*12+10] << " " <<  Verts[i*12+11] << std::endl;
   }
-  /*
-  IndexCount = sizeof(Faces)/sizeof(Faces[0]);
-  //  std::cerr << IndexCount << std::endl;
-    // Create the VAO:
-    GLuint vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
 
-    // Create the VBO for positions:
-    GLuint positions;
-    GLsizei stride = 12 * sizeof(float);
-    // std::cerr <<  sizeof(Verts) << " " <<  sizeof(Verts)/(6*sizeof(float)) <<std::endl;
-    //std::cerr <<  sizeof(Faces) << " " <<  sizeof(Faces)/(3*sizeof(int)) <<std::endl;
-    glGenBuffers(1, &positions);
-    glBindBuffer(GL_ARRAY_BUFFER, positions);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Verts), Verts, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(PositionSlot);
-    glVertexAttribPointer(PositionSlot, 3, GL_FLOAT, GL_FALSE, stride, 0);
-    glEnableVertexAttribArray(NormalSlot);
-    glVertexAttribPointer(NormalSlot, 3, GL_FLOAT, GL_FALSE, stride, ((char *)NULL + 12));
-    glEnableVertexAttribArray(DeltaSlot);
-    glVertexAttribPointer(DeltaSlot, 3, GL_FLOAT, GL_FALSE, stride, ((char *)NULL + 24));
-    glEnableVertexAttribArray(TagSlot);
-    glVertexAttribPointer(TagSlot, 3, GL_FLOAT, GL_FALSE, stride, ((char *)NULL + 36));
-
-    // Create the VBO for indices:
-    GLuint indices;
-    glGenBuffers(1, &indices);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Faces), Faces, GL_STATIC_DRAW);
-  */
 
   refreshBuffer(true);
 }
 
-/*
-static void CreateObject()
-{
-    const int Faces[] = {
-        0, 1, 2,
-        0, 2, 3,
-        0, 3, 4,
-        0, 4, 5,
-	0, 5, 6,
-	0, 6, 1,
 
-        7, 2, 1,
-        7, 3, 2,
-        7, 4, 3,
-        7, 5, 4,
-	7, 6, 5,
-	7, 1, 6,
-
-        };
-
-    float s = sin(60.0/180.0*M_PI);
-    float c = cos(60.0/180.0*M_PI);
-
-
-    const float Verts[] = { // pos n delta tag
-      0.0f, 0.0f, 2.0f,  0.0f, 0.0f, 1.0f,  0.0f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f,
-
-      -c, s, 0.0f,      -c, s, 0.0f,        0.0f,  10.0f, 20.0f, 1.0f, -1.0f, 0.0f,
-      c,  s, 0.0f,       c, s, 0.0f,        0.0f, 10.0f, 20.0f,  1.0, -1.0f, 0.0f,
-
-      2.0*c, 0.0f, 0.0f, 1.0, 0.0f, 0.0f,   0.0f, 10.0f, 20.0f,  1.0f, -1.0f, 0.0f,
-
-      c, -s, 0.0f,       c, -s, 0.0f,       0.0f,  0.0f, 20.0f, 1.0f, -1.0f, 0.0f,
-      -c, -s, 0.0f,      -c, -s, 0.0f,      0.0f, 0.0f, 20.0f,   1.0f, -1.0f, 0.0f,
-
-      -2*c, 0.0f, 0.0f,  -1.0, 0.0f, 0.0f,  0.0f, 0.0f, 20.0f,    1.0f, -1.0f, 0.0f,
-
-      0.0f, 0.0f, -2.0f,  0.0f, 0.0f, -1.0f,  0.0f, 0.0f, 0.0f,  0.0f, 0.0f, 0.0f,
-};
- 
-    IndexCount = sizeof(Faces) / sizeof(Faces[0]);
-    std::cerr << IndexCount << std::endl;
-
-    // Create the VAO:
-    GLuint vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-
-    // Create the VBO for positions:
-    GLuint positions;
-    GLsizei stride = 12 * sizeof(float);
-    glGenBuffers(1, &positions);
-    glBindBuffer(GL_ARRAY_BUFFER, positions);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Verts), Verts, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(PositionSlot);
-    glVertexAttribPointer(PositionSlot, 3, GL_FLOAT, GL_FALSE, stride, 0);
-    glEnableVertexAttribArray(NormalSlot);
-    glVertexAttribPointer(NormalSlot, 3, GL_FLOAT, GL_FALSE, stride, ((char *)NULL + 12));
-    glEnableVertexAttribArray(DeltaSlot);
-    glVertexAttribPointer(DeltaSlot, 3, GL_FLOAT, GL_FALSE, stride, ((char *)NULL + 24));
-    glEnableVertexAttribArray(TagSlot);
-    glVertexAttribPointer(TagSlot, 3, GL_FLOAT, GL_FALSE, stride, ((char *)NULL + 36));
-
-    // Create the VBO for indices:
-    GLuint indices;
-    glGenBuffers(1, &indices);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Faces), Faces, GL_STATIC_DRAW);
-}
-
-
-/*
-static void CreateCube()
-{
-    const int Faces[] = {
-        0, 1, 2,
-        1, 3, 2,
-        4, 0, 2,
-        6, 4, 2,
-	3, 6, 2,
-
-	7, 1, 5,
-	4, 7, 5,
-	1, 4, 5,
-	
-	4, 1, 0,
-	1, 7, 3,
-	7, 6, 3,
-	7, 4, 6
-        };
-
-    const float Verts[] = {
-      -1.4f, 1.0f, 1.0f,  -1.0f, 0.0f, 0.0f,  0.0f, 1.0f, 0.0f, 
-      -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, -1.0f,   -1.0f, 1.0f, -1.0f, 
-      1.0f, 1.0f, 1.0f,    1.0f, 1.0f, 1.0f,  0.0f, 0.0f, 0.0f, 
-      1.0f, 1.0f, -1.0f,   1.0f, 1.0f, -1.0f,   0.0f, 0.0f, 0.0f, 
-      -1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f,  
-      -1.0f, -1.0f, -1.0f,-1.0f, -1.0f, -1.0f,  0.0f, 0.0f, 0.0f,
-      1.0f, -1.0f, 1.0f,   1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 
-      1.0f, -1.0f, -1.0f,  1.0f, -1.0f, -1.0f,  0.0f, 0.0f, 0.0f,  
-};
- 
-    IndexCount = sizeof(Faces) / sizeof(Faces[0]);
-    std::cerr << IndexCount << std::endl;
-
-    // Create the VAO:
-    GLuint vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-
-    // Create the VBO for positions:
-    GLuint positions;
-    GLsizei stride = 12 * sizeof(float);
-    glGenBuffers(1, &positions);
-    glBindBuffer(GL_ARRAY_BUFFER, positions);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Verts), Verts, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(PositionSlot);
-    glVertexAttribPointer(PositionSlot, 3, GL_FLOAT, GL_FALSE, stride, 0);
-    glEnableVertexAttribArray(NormalSlot);
-    glVertexAttribPointer(NormalSlot, 3, GL_FLOAT, GL_FALSE, stride, ((char *)NULL + 12));
-    glEnableVertexAttribArray(TagSlot);
-    glVertexAttribPointer(TagSlot, 3, GL_FLOAT, GL_FALSE, stride, ((char *)NULL + 24));
-
-    // Create the VBO for indices:
-    GLuint indices;
-    glGenBuffers(1, &indices);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Faces), Faces, GL_STATIC_DRAW);
-}
-
-
-/*static void CreateIcosahedron()
-{
-    const int Faces[] = {
-        2, 1, 0,
-        3, 2, 0,
-        4, 3, 0,
-        5, 4, 0,
-        1, 5, 0,
-
-        11, 6,  7,
-        11, 7,  8,
-        11, 8,  9,
-        11, 9,  10,
-        11, 10, 6,
-
-        1, 2, 6,
-        2, 3, 7,
-        3, 4, 8,
-        4, 5, 9,
-        5, 1, 10,
-
-        2,  7, 6,
-        3,  8, 7,
-        4,  9, 8,
-        5, 10, 9,
-        1, 6, 10 };
-
-    const float Verts[] = {
-      0.000f,  0.000f, 1.000f,          0.000f,  0.000f,  1.000f, 0.0f,  0.000f,  1.0f,
-      0.894f,  0.000f,  0.447f,         0.894f,  0.000f,  0.447f, 0.000f,  0.000f,  1.000f, 
-         0.276f,  0.851f,  0.447f,      0.276f,  0.851f,  0.447f, 0.000f,  0.000f, 0.000f,
-	 -0.724f,  0.526f,  0.447f,  	 -0.724f,  0.526f,  0.447f, 0.000f,  0.000f, 0.000f,
-	 -0.724f, -0.526f,  0.447f,  	 -0.724f, -0.526f,  0.447f, 0.000f,  0.000f, 0.000f,
-         0.276f, -0.851f,  0.447f,           0.276f, -0.851f,  0.447f, 0.000f,  0.000f, 0.000f,
-         0.724f,  0.526f, -0.447f,           0.724f,  0.526f, -0.447f, 0.000f,  0.000f, 0.000f,
-	 -0.276f,  0.851f, -0.447f,  	 -0.276f,  0.851f, -0.447f, 0.000f,  0.000f, 0.000f,
-	 -0.894f,  0.000f, -0.447f,  	 -0.894f,  0.000f, -0.447f, 0.000f,  0.000f, 0.000f,
-	 -0.276f, -0.851f, -0.447f,  	 -0.276f, -0.851f, -0.447f, 0.000f,  0.000f, 0.000f,
-         0.724f, -0.526f, -0.447f,            0.724f, -0.526f, -0.447f, 0.000f,  0.000f, 0.000f, 
-      0.000f,  0.000f, -1.000f,            0.000f,  0.000f, -1.000f, 0.000f,  0.000f, 0.000f, };
- 
-    IndexCount = sizeof(Faces) / sizeof(Faces[0]);
-    std::cerr << IndexCount << std::endl;
-
-    // Create the VAO:
-    GLuint vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-
-    // Create the VBO for positions:
-    GLuint positions;
-    GLsizei stride = 9 * sizeof(float);
-    glGenBuffers(1, &positions);
-    glBindBuffer(GL_ARRAY_BUFFER, positions);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Verts), Verts, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(PositionSlot);
-    glVertexAttribPointer(PositionSlot, 3, GL_FLOAT, GL_FALSE, stride, 0);
-    glEnableVertexAttribArray(NormalSlot);
-    glVertexAttribPointer(NormalSlot, 3, GL_FLOAT, GL_FALSE, stride, ((char *)NULL + 12));
-    glEnableVertexAttribArray(TagSlot);
-    glVertexAttribPointer(TagSlot, 3, GL_FLOAT, GL_FALSE, stride, ((char *)NULL + 24));
-
-    // Create the VBO for indices:
-    GLuint indices;
-    glGenBuffers(1, &indices);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Faces), Faces, GL_STATIC_DRAW);
-}
-*/
 
 
 static void LoadEffect()
@@ -1067,11 +839,9 @@ void refreshBuffer(bool newBuffer){
   float sVerts[Verts.size()];
   
   for (int i = 0; i < Verts.size(); i++){
-    if (i%12== 0)
-      std::cerr << std::endl;
 
     sVerts[i] = Verts[i];
-    std::cerr << sVerts[i]  << " " ;
+
   }
 
   for (int i = 0; i < Faces.size(); i++){
