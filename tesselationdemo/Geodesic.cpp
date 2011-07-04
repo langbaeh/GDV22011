@@ -16,6 +16,8 @@ static void CreateIcosahedron();
 static void CreateCube();
 static void CreateObject();
 static void LoadEffect();
+static void refreshBuffer(bool newBuffer);
+static void updateBuffer();
 void CreateModel();
 
 typedef struct {
@@ -31,6 +33,8 @@ typedef struct {
     GLuint Tesselation;
     GLuint Wireframe;
     GLuint Tagg;
+  GLuint ColNorm;
+  GLuint DCol;
 } ShaderUniforms;
 
 static GLsizei IndexCount;
@@ -38,6 +42,8 @@ static const GLuint PositionSlot = 0;
 static const GLuint NormalSlot = 1;
 static const GLuint TagSlot = 2;
 static const GLuint DeltaSlot = 3;
+GLuint positions;
+
 static GLuint ProgramHandle;
 static Matrix4 ProjectionMatrix;
 static Matrix4 ModelviewMatrix;
@@ -49,6 +55,14 @@ static float NormalModel = 2.0;
 static float Tesselation = 0.0;
 static float Wireframe = 0.0;
 static float Tagg = 0.0;
+static float ColNorm = 0.0;
+static float DCol = 0.0;
+
+// storage
+
+std::vector<float> Verts;
+std::vector<float> Faces;
+int nv;
 
 // Camera information
 Point3 eyePosition = P3MakeFromElems(0, 0, -10);
@@ -63,6 +77,8 @@ int mouseButton = 0;
 int mouseX = 0;
 int mouseY = 0;
 
+// selection
+int selID = 0;
 
 
 void PezRender(GLuint fbo)
@@ -73,6 +89,8 @@ void PezRender(GLuint fbo)
     glUniform1f(Uniforms.Tesselation, Tesselation);
     glUniform1f(Uniforms.Wireframe, Wireframe);
     glUniform1f(Uniforms.Tagg, Tagg);
+    glUniform1f(Uniforms.ColNorm, ColNorm);
+    glUniform1f(Uniforms.DCol, DCol);
     
     Vector4 lightPosition = V4MakeFromElems(0.25, 0.25, 1, 0);
     glUniform3fv(Uniforms.LightPosition, 1, &lightPosition.x);
@@ -121,6 +139,8 @@ const char* PezInitialize(int width, int height)
     Uniforms.Tesselation = glGetUniformLocation(ProgramHandle, "Tesselation");
     Uniforms.Wireframe = glGetUniformLocation(ProgramHandle, "Wireframe");
     Uniforms.Tagg = glGetUniformLocation(ProgramHandle, "Tagg");
+    Uniforms.ColNorm = glGetUniformLocation(ProgramHandle, "ColNorm");
+    Uniforms.DCol = glGetUniformLocation(ProgramHandle, "DCol");
 
     // Set up the projection matrix:
     const float HalfWidth = 0.6f;
@@ -142,7 +162,7 @@ std::cerr << "Loading model from OFF file"  << std::endl;
 
     std::istream& in = std::cin;
 
- int nv,nf,ne;
+ int nf,ne;
   char s[256];
   in >> s;
   bool noff = false;
@@ -176,10 +196,10 @@ std::cerr << "Loading model from OFF file"  << std::endl;
 
   std::cerr << nv << " " << nf << " " << ne << std::endl;
 
-
-  float Verts[12*nv];
-
-
+ 
+  //  float Verts[12*nv];
+  Verts.clear();
+  Verts.resize(12*nv);
 
   Vec3f vmin(10e6 );
   Vec3f vmax(-10e6 );
@@ -187,7 +207,6 @@ std::cerr << "Loading model from OFF file"  << std::endl;
 
   for (int i = 0; i < nv; ++i)
   {
-
     in >> Verts[i*12+0];
     in >> Verts[i*12+1];
     in >> Verts[i*12+2];
@@ -227,13 +246,13 @@ std::cerr << "Loading model from OFF file"  << std::endl;
     vmax[1] = std::max(Verts[i*12+1], vmax[1]);
     vmax[2] = std::max(Verts[i*12+2], vmax[2]);
   }
-  /*  for (int i = 0; i < nv; ++i){
+    for (int i = 0; i < nv; ++i){
 
     std::cerr << i << " : "<<Verts[i*12+0] << " " << Verts[i*12+1] << " " <<  Verts[i*12+2] << std::endl;
     std::cerr << i << " : "<<Verts[i*12+3] << " " << Verts[i*12+4] << " " <<  Verts[i*12+5] << std::endl;
     std::cerr << i << " : "<<Verts[i*12+6] << " " << Verts[i*12+7] << " " <<  Verts[i*12+8] << std::endl;
     std::cerr << i << " : "<<Verts[i*12+9] << " " << Verts[i*12+10] << " " <<  Verts[i*12+11] << std::endl;
-    }*/
+    }
   Vec3f mp = (vmin + vmax)*0.5;
   vmax -= mp;
   float maxp = std::max(vmax[0],vmax[1]);
@@ -249,7 +268,9 @@ std::cerr << "Loading model from OFF file"  << std::endl;
       Verts[i*12+2] /= maxp;
 
     }
-  int Faces[3*nf];
+  //  int Faces[3*nf];
+  Faces.clear();
+  Faces.resize(3*nf);
 
  for (int i = 0; i < nf; ++i)
   {
@@ -521,12 +542,13 @@ std::cerr << "Loading model from OFF file"  << std::endl;
   
   // crack prevention
   for (int i = 0; i < nv; i++){
-    //    std::cerr << Verts[i*12+9] << " " << Verts[i*12+10] << " " <<  Verts[i*12+11] << std::endl;
-    if ((Verts[i*12+9]+Verts[i*12+10] + Verts[i*12+11]) == 0.0){
+            std::cerr << Verts[i*12+9] << " " << Verts[i*12+10] << " " <<  Verts[i*12+11] << std::endl;
+	if ((fabs(Verts[i*12+9])+fabs(Verts[i*12+10])+fabs(Verts[i*12+11])) == 0.0){
       Verts[i*12+9] = 0.00000001;
     }
+	//        std::cerr << Verts[i*12+9] << " " << Verts[i*12+10] << " " <<  Verts[i*12+11] << std::endl;
   }
- 
+  /*
   IndexCount = sizeof(Faces)/sizeof(Faces[0]);
   //  std::cerr << IndexCount << std::endl;
     // Create the VAO:
@@ -556,9 +578,12 @@ std::cerr << "Loading model from OFF file"  << std::endl;
     glGenBuffers(1, &indices);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Faces), Faces, GL_STATIC_DRAW);
+  */
+
+  refreshBuffer(true);
 }
 
-
+/*
 static void CreateObject()
 {
     const int Faces[] = {
@@ -629,7 +654,7 @@ static void CreateObject()
 }
 
 
-
+/*
 static void CreateCube()
 {
     const int Faces[] = {
@@ -689,7 +714,7 @@ static void CreateCube()
 }
 
 
-static void CreateIcosahedron()
+/*static void CreateIcosahedron()
 {
     const int Faces[] = {
         2, 1, 0,
@@ -757,6 +782,8 @@ static void CreateIcosahedron()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Faces), Faces, GL_STATIC_DRAW);
 }
+*/
+
 
 static void LoadEffect()
 {
@@ -861,6 +888,8 @@ void PezUpdate(unsigned int elapsedMicroseconds)
 
 
 void PezHandleKey(char key){
+  bool refresh = false;
+
   //std::cerr << "handling: " << key << std::endl;
   switch(key){
     // Normalmodels
@@ -873,11 +902,120 @@ void PezHandleKey(char key){
   case '2': // basic
     NormalModel = 2.0;
     break;
-  case 'w': // wireframe on/off
+
+  case 'w':
+    Verts[selID*12+6] += 0.1;
+    refresh = true;
+    break;
+
+  case 's':
+    Verts[selID*12+6] -= 0.1;
+    refresh = true;
+    break;
+
+  case 'e':
+    Verts[selID*12+7] += 0.1;
+    refresh = true;
+    break;
+
+  case 'd':
+    Verts[selID*12+7] -= 0.1;
+    refresh = true;
+    break;
+  case 'r':
+    Verts[selID*12+8] += 0.1;
+    refresh = true;
+    break;
+
+  case 'f':
+    Verts[selID*12+8] -= 0.1;
+    refresh = true;
+    break;
+
+  case 't':
+    std::cerr << Verts[selID*12+9] << " " ;
+    Verts[selID*12+9] += 0.1;
+    if (Verts[selID*12+9] > 1000){
+      Verts[selID*12+9] = 1000;
+    }else{
+      refresh = true;
+    }
+    std:: cerr << Verts[selID*12+9] << std::endl;
+    break;
+
+  case 'g':
+    std::cerr << Verts[selID*12+9] << " " ;
+    Verts[selID*12+9] -= 0.1;
+    if (Verts[selID*12+9] < 0.0){
+      Verts[selID*12+9] = 0.0;
+    }else{
+      refresh = true;
+    }
+    std:: cerr << Verts[selID*12+9] << std::endl;
+    break;
+
+  case 'y':
+    Verts[selID*12+10] += 0.1;
+    if (Verts[selID*12+10] > 1){
+      Verts[selID*12+10] = 1;
+    }else{
+      refresh = true;
+    }
+    std::cerr << "tag changed at " << selID << std::endl;
+
+    break;
+
+  case 'h':
+    Verts[selID*12+10] -= 0.1;
+    if (Verts[selID*12+10] < -1.0){
+      Verts[selID*12+10] = -1.0;
+    }else{
+      refresh = true;
+    }
+
+    break;
+
+  case 'u':
+    Verts[selID*12+11] += 0.1;
+    if (Verts[selID*12+11] > 1){
+      Verts[selID*12+11] = 1;
+    }else{
+      refresh = true;
+    }
+
+
+    break;
+
+  case 'j':
+    Verts[selID*12+11] -= 0.1;
+    if (Verts[selID*12+11] < -1.0){
+      Verts[selID*12+11] = -1.0;
+    }else{
+      refresh = true;
+    }
+
+    std::cerr << "tag changed at " << selID << std::endl;
+
+    break;
+
+
+  case 'n':
+    selID = (selID-1)%nv;
+    std::cerr << "Selected vertex " << selID << std::endl;
+    refresh = true;
+    break;
+
+  case 'm':
+    selID = (selID+1)%nv;
+    std::cerr << "Selected vertex " << selID << std::endl;
+    refresh = true;
+    break;
+
+  case 'i': // wireframe on/off
     if (Wireframe>0.0) Wireframe = 0.0;
     else Wireframe = 1.0;
     break;
-  case 't': // tesselation on/off
+  case 'k': // tesselation on/off
     if (Tesselation>0.0) Tesselation = 0.0;
     else Tesselation = 1.0;
     break;
@@ -885,7 +1023,15 @@ void PezHandleKey(char key){
     if (Tagg>0.0) { Tagg = 0.0; std::cerr << "tag off" << std::endl;}
     else {Tagg = 1.0; std::cerr << "tag on" << std::endl;}
     break;
-
+  case ';': // color on/off
+    if (DCol>0.0) { DCol = 0.0; std::cerr << "tag off" << std::endl;}
+    else {DCol = 1.0; std::cerr << "tag on" << std::endl;}
+    break;
+  case 'l': // color on/off
+    if (ColNorm>0.0) { ColNorm = 0.0; std::cerr << "tag off" << std::endl;}
+    else {ColNorm = 1.0; std::cerr << "tag on" << std::endl;}
+    break;
+   
   case '.':
     TessLevel++;
     break;
@@ -896,7 +1042,82 @@ void PezHandleKey(char key){
     std::cerr << "can't handle key: " << key << std::endl;
     
   }
+
+  if (refresh){
+    updateBuffer();
+    //    LoadEffect();
+  }
 }
+
+
+void updateBuffer(){
+  float* buf = (float*) glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+
+
+  for (int i = 0; i < Verts.size(); i++){
+    buf[i] = Verts[i];
+  }
+
+
+  glUnmapBuffer(GL_ARRAY_BUFFER);
+}
+
+void refreshBuffer(bool newBuffer){
+  int sFaces[Faces.size()];
+  float sVerts[Verts.size()];
+  
+  for (int i = 0; i < Verts.size(); i++){
+    if (i%12== 0)
+      std::cerr << std::endl;
+
+    sVerts[i] = Verts[i];
+    std::cerr << sVerts[i]  << " " ;
+  }
+
+  for (int i = 0; i < Faces.size(); i++){
+    sFaces[i] = Faces[i];
+  }
+    IndexCount = sizeof(sFaces)/sizeof(sFaces[0]);
+    std::cerr << IndexCount << std::endl;
+    // Create the VAO:
+    GLuint vao;
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+    GLsizei stride = 12 * sizeof(float);
+    if (newBuffer){
+      // Create the VBO for positions:
+      glGenBuffers(1, &positions);
+    }
+
+    glBindBuffer(GL_ARRAY_BUFFER, positions);
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(sVerts), sVerts, GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(PositionSlot);
+    glVertexAttribPointer(PositionSlot, 3, GL_FLOAT, GL_FALSE, stride, 0);
+    glEnableVertexAttribArray(NormalSlot);
+    glVertexAttribPointer(NormalSlot, 3, GL_FLOAT, GL_FALSE, stride, ((char *)NULL + 12));
+    glEnableVertexAttribArray(DeltaSlot);
+    glVertexAttribPointer(DeltaSlot, 3, GL_FLOAT, GL_FALSE, stride, ((char *)NULL + 24));
+    glEnableVertexAttribArray(TagSlot);
+    glVertexAttribPointer(TagSlot, 3, GL_FLOAT, GL_FALSE, stride, ((char *)NULL + 36));
+ 
+    if (newBuffer){
+    // Create the VBO for indices:
+      GLuint indices;
+      glGenBuffers(1, &indices);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices);
+      glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(sFaces), sFaces, GL_STATIC_DRAW);
+    }
+
+}
+
+
+
+
+
+
+
 
 void PezHandleMouse(int x, int y, int action)
 {

@@ -38,6 +38,7 @@ uniform float TessLevel;
 uniform float TessLevelOuter;
 uniform float Tesselation;
 uniform float Tagg;
+uniform float DCol;
 
 #define ID gl_InvocationID
 
@@ -88,9 +89,11 @@ void main()
        // compute dot product between face normals and delta
        float dp = dot(fn, vDelta[ID]);
        if (dp < 0.0){
-         tcColor[ID] = vec3(0.0,0.0,1.0);
+       if (DCol> 0.0)
+           tcColor[ID] = vec3(0.0,0.0,1.0);
        	  tcNormalMinus[ID] = vNormal[ID]-vTag[ID].x*vDelta[ID];
        }else{
+       if(DCol > 0.0)
          tcColor[ID] = vec3(1.0,0.0,0.0);
 	  tcNormalMinus[ID] = vNormal[ID]+vTag[ID].x*vDelta[ID]; 
        }
@@ -133,7 +136,7 @@ uniform mat4 Projection;
 uniform mat4 Modelview;
 uniform float NormalModel;
 uniform float Tagg;
-
+uniform float ColNorm;
 float py(vec3 p, vec3 n, vec3 q){
      return -dot(n, (q-p));
 }
@@ -145,10 +148,10 @@ vec3 stitch(vec3 p, vec3 n, vec3 nt, vec3 de, vec3 tag, vec3 po, vec3 tagT){
 
      vec3 e = py(p,n,d) * n;
   
-     if (length(tag)> 0.0 && length(tagT)> 0.0){
+     if (length(tag)> 0.000001 && length(tagT)> 0.000001){
      	// both are tagged
 	e = py(p,n,d) * normalize(n + tag[2]*de);
-     }else if (length(tag)> 0.0){
+     }else if (length(tag)> 0.000001){
         // only one is tagged
 	vec3 x = normalize((1.0f - tag[0])*n + tag[0]*nt);
 	e = py(p,x,d) * x;
@@ -282,8 +285,8 @@ void main()
     vec3 c001 = phi.x*c101 + phi.y*c011 + phi.z*c2;
 
 	    teColor = phi.x*c100 + phi.y*c010 + phi.z*c001;  
-
-//	    teColor = teNormal;
+	    if(ColNorm > 0.0)
+	    teColor = teNormal;
     tePatchDistance = gl_TessCoord;
 
 
