@@ -150,18 +150,28 @@ int main(int argc, char** argv)
                     break;
                 
                 case ButtonPress:
-                    PezHandleMouse(event.xbutton.x, event.xbutton.y, PEZ_DOWN);
-                    break;
+		  if (event.xbutton.button == Button1){
+                    PezHandleMouse(event.xbutton.x, event.xbutton.y, PEZ_LEFT_DOWN);
+		  }else if (event.xbutton.button == Button2){
+                    PezHandleMouse(event.xbutton.x, event.xbutton.y, PEZ_RIGHT_DOWN);
+		  }else if (event.xbutton.button == Button3){
+                    PezHandleMouse(event.xbutton.x, event.xbutton.y, PEZ_MIDDLE_DOWN);
+		  }
+		  break;
 
                 case ButtonRelease:
                     PezHandleMouse(event.xbutton.x, event.xbutton.y, PEZ_UP);
+
                     break;
 
                 case MotionNotify:
-                    PezHandleMouse(event.xmotion.x, event.xmotion.y, PEZ_MOVE);
+
+		     PezHandleMouse(event.xmotion.x, event.xmotion.y, PEZ_MOVE);
+
                     break;
 
                 case KeyRelease:
+		  break;
                 case KeyPress: {
                     XComposeStatus composeStatus;
                     char asciiCode[32];
@@ -174,6 +184,8 @@ int main(int argc, char** argv)
                         case 0x1b:
                             done = 1;
                             break;
+		        default:
+			  PezHandleKey(asciiCode[0]);
                     }
                 }
             }
