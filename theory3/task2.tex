@@ -19,7 +19,7 @@ Da das Tensorprodukt die Eckpunkte interpoliert sind die Koeffizienten direkt ge
 Fuer den Unterteilungsschritt muessen wir 16 neue Kontrollpunkte berechnen. Wir bestimmen diese indem wir de Casteljeau fuer fixe $u$ bzw. $v$ anwenden und erhalten so:\\
 Fuer fixe $v_0$:
 \begin{align}
-	&P_{20}(\frac{1}{4}) = \frac{1}{4} 
+    &P_{20}(\frac{1}{4}) = \frac{1}{4}
 	&P_{20}(\frac{3}{4}) = \frac{1}{4} \\
 	&P_{11}(\frac{1}{4}) = \frac{3}{4} 
 	&P_{11}(\frac{3}{4}) = \frac{3}{4} \\
@@ -37,8 +37,12 @@ Fuer fixe $u_0$:
 \end{align}
 Die restlichen 4 Punkte folgen aus einem weiteren Schritt des de Casteljau:
 \begin{align}
-	&P(\frac{1}{4},\frac{1}{4}) = \frac{2}{3} 
+    &P(0,\frac{1}{2}) = \frac{1}{2}
+    &P(1,\frac{1}{2}) = \frac{1}{2}
+	&P(\frac{1}{4},\frac{1}{4}) = \frac{2}{3}
 	&P(\frac{1}{4},\frac{3}{4}) = \frac{2}{3} \\
+	&P(\frac{1}{2},0) = \frac{1}{2}
+	&P(\frac{1}{2},1) = \frac{1}{2}
 	&P(\frac{3}{4},\frac{1}{4}) = \frac{2}{3} 
 	&P(\frac{3}{4},\frac{3}{4}) = \frac{2}{3} 
 \end{align}
