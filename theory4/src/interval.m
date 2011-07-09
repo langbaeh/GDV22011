@@ -13,7 +13,7 @@ r = func(i(1,:));
       %refine
       disp 'refining' 
       i(1,:)
-      sub = [[i(1,1)  sum(i(1,:))/2.0]; [sum(i(1,:))/2 i(1,2)]];
+      sub = [[i(1,1)  sum(i(1,:))/2.0]; [sum(i(1,:))/2 i(1,2)]]
       while(size(sub,1)> 0 && found == 0)
         cur = sub(1,:);
         cur

@@ -1,11 +1,20 @@
 %!TEX root = main.tex
 
 \section*{Aufgabe 1 Implizite Oberflächen}
+\subsection*{a)}
+$f(x,y,z) = \frac{1-\sin(\frac{\pi}{2}z)}{2 + 2\alpha} + \frac{\alpha (1 + \cos(2\pi f_M \cos(\frac{\pi}{2} \sqrt{x^2+y^2})))}{2 + 2\alpha}$
+
+\begin{eqnarray}
+    \frac{\partial f}{\partial z}&=& \frac{-\frac{\pi}{2}\cos(\frac{\pi}{2}z)}{2 + 2\alpha} \\
+    \frac{\partial f}{\partial x}&=&  \frac{-\alpha \sin(2\pi f_M \cos(\frac{\pi}{2} \sqrt{x^2+y^2})) (-2\pi f_M\sin(\frac{\pi}{2}\sqrt{x^2+y^2})) \frac{\pi}{4} (x^2+y^2)^{-1/2} 2x}
+    {2 + 2\alpha}\\
+    \frac{\partial f}{\partial y}&=&\frac{-\alpha \sin(2\pi f_M \cos(\frac{\pi}{2} \sqrt{x^2+y^2})) (-2\pi f_M\sin(\frac{\pi}{2}\sqrt{x^2+y^2})) \frac{\pi}{4} (x^2+y^2)^{-1/2} 2y}
+    {2 + 2\alpha}
+\end{eqnarray}
+
+\subsection*{b)}
 
 Einsetzen des Sichtstrahls in die Funktion ergibt $ft(t) = t^3+8t-4t^2-2$
-
-
-
 
 Die zu bearbeitende Intervalle nennen wir $I = \{[t_0, t_1],\dots, [t_{n-1}, t_{n}] \}$ und die Intervalle die refined werden $R = \{[r_0, r_1],\dots, [r_{m-1}, r_{m}] \}$
 
