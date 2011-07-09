@@ -1,0 +1,126 @@
+%!TEX root = main.tex
+
+\section*{Aufgabe 2 Euler-Formeln}
+
+\subsection*{a)}
+
+Ein einzelner Flap verändert $\Delta$ wie folgt:
+\begin{eqnarray}
+E_{I}^+ &=& E_{I} +1 \\
+    E_{B}^+ &=& E_{B} +1 \\
+    V_{I}^+ &=& V_{I} \\
+    V_{B}^+ &=& V_{B} +1\\
+    F^+ &=& F +1
+\end{eqnarray}
+Setzen wir das nun in die Euler Formel ein erhalten wir ausgehend von einem korrekten Netz:
+\begin{eqnarray}
+    &&(V_{I}^+ + V_B^+) - (E_I^+ + E_B^+) + F^+\\
+    &=& (V_{I} + V_B + 1) - (E_I + 1 + E_B + 1) + F +1 \\
+    &=&(V_{I} + V_B ) - (E_I +E_B ) + F 
+\end{eqnarray}
+
+Womit wir gezeigt haben, dass ein einzelner Flap das Netz korrekt lässt.
+
+Ein einzelner Fill verändert $\Delta$ wie folgt:
+\begin{eqnarray}
+E_{I}^+ &=& E_{I} +2 \\
+    E_{B}^+ &=& E_{B} -1 \\
+    V_{I}^+ &=& V_{I} +1\\
+    V_{B}^+ &=& V_{B} -1\\
+    F^+ &=& F +1
+\end{eqnarray}
+
+
+Setzen wir das nun in die Euler Formel ein erhalten wir ausgehend von einem korrekten Netz:
+\begin{eqnarray}
+    &&(V_{I}^+ + V_B^+) - (E_I^+ + E_B^+) + F^+  \\
+    &=&(V_{I} +1+ V_B - 1) - (E_I + 2 + E_B - 1) + F +1 \\
+    &=& (V_{I} + V_B ) - (E_I +E_B ) + F = 1
+\end{eqnarray}
+
+
+Womit wir gezeigt haben, dass ein einzelner Fill das Netz korrekt lässt.
+
+Die Formeln für $E_I, E_B, V_I$ und $V_B$ lauten nun:
+\begin{eqnarray}
+E_{I}^+ &=& F_l + 2F_i \\
+    E_{B}^+ &=& 3 + F_l - F_i  \\
+    V_{I}^+ &=& F_i\\
+    V_{B}^+ &=& 3 + F_l - F_i\\
+    F^+ &=& 1 + F_i + F_l
+\end{eqnarray}
+
+Davon ausgehend können wir schreiben:
+
+\begin{eqnarray}
+    E_I&=& 2 f_i + F_l \\
+    &=& E_B-3+3F_I \\
+    &=& 3V_I + E_B-3
+\end{eqnarray}
+
+und mit $F_l = E_B - 3+F_i$ dann:
+\begin{eqnarray}
+    F &=& 1 + V_I + E_B-3 + F_i \\
+    &=& 2 V_I + E_B-2 = N
+\end{eqnarray}
+
+\subsection*{b)}
+$V_B = HE_B$: Alle äußeren Knoten haben eine Halbkante.
+
+$E_B = HE_B$: Alle äußeren Kanten haben eine Halbkante.
+
+$HE_I = 2E_I$: Alle inneren Kanten haben 2 Halbkanten.
+
+\begin{eqnarray}
+    N = \frac{1}{3} HE &=& 1 -V +E \\
+    &=& 1 - (V_I+V_B) + (E_I + E_B) \\
+    &=& 1 - (V_I+HE_B) + (\frac{1}{2}HE_I + E_B) \\
+    &=& 1- V_I+E_B - HE_B + \frac{1}{2} HE_I\\
+    \frac{1}{3} HE_I + \frac{1}{3} HE_B &=& 1- V_I+E_B - HE_B + \frac{1}{2} HE_I\\
+    -\frac{1}{6} HE_I - \frac{2}{3} HE_B &=& 1- V_I- HE_B\\
+    -\frac{1}{6} HE_I + \frac{1}{3} HE_B &=& 1- V_I \\
+    \frac{1}{3} HE_I - \frac{2}{3} HE_B &=& 2 V_I - 2\\
+    \frac{1}{3} HE_I + \frac{1}{3} HE_B &=& 2 V_I + E_B - 2\\
+    N&=& 2 V_I + E_B - 2
+\end{eqnarray}
+
+\subsection*{c)}
+\subsubsection*{i.}
+$V-E+F = 2 $
+\subsubsection*{ii.}
+$\frac{2}{n}E=F$
+\subsubsection*{iii.}
+$\frac{2}{m}E=V$
+\subsubsection*{iv.}
+$\frac{2}{m}E - E +\frac{2}{n}E =2$
+\subsubsection*{iv.}
+Wir können iv. umschreiben zu:
+\begin{eqnarray}
+    \frac{2}{E} &=& \frac{2}{m} - 1 + \frac{2}{n} \\
+    \frac{1}{E} + \frac{1}{2} &=& \frac{1}{m}+ \frac{1}{n} \\
+\end{eqnarray}
+
+da $E \geq 3$ wissen wir $\frac{1}{m}+ \frac{1}{n} > \frac{1}{2}$.
+
+Dies ist erfüllt für $(n,m) = {(3,3), (3,4), (4,3), (5,3), (3,5)}$. Es kann keine weiteren geben, da $n \geq 3$ und$m \geq 3$ und für größere Werte als 5 für $n$ oder $m$ gilt: $\frac{1}{m}+ \frac{1}{n} \leq \frac{1}{2}$.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
