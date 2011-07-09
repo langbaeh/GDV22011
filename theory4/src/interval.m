@@ -3,8 +3,8 @@ i = [0 4]
 while(size(i,1) >0)
 r = func(i(1,:));
   if (0 < r(1) || 0 > r(2))
-    disp 'dropping '
-    i(1,:)
+      %disp 'dropping ';
+  i(1,:);
     i = i(2:end,:);
   else
       rt = funct(i(1,:));
@@ -20,8 +20,8 @@ r = func(i(1,:));
         elseif(func(cur(1))*func(cur(2)) <= 0)
         sub = [sub; [cur(1) sum(cur(1,:))/2.0]; [sum(cur(1,:))/2 cur(2)]];
         else
-            disp 'dropping in refinement'
-            cur
+            %disp 'dropping in refinement';
+        cur;
         end
         
         sub = sub(2:end,:);
