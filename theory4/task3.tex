@@ -1,9 +1,9 @@
 %!TEX root = main.tex
-\def\Tiny{\fontsize{2pt}{2pt}\selectfont}
 
 \section*{Aufgabe 3 Interpolation mit Bezier-Dreiecken}
-
-\Tiny
+\tiny
+\begin{sideways}
+    \parbox{\textheight}{
 \begin{eqnarray}
     M &=&    
 \left(\begin{matrix}
@@ -15,19 +15,45 @@
     M &=&
 \left(\begin{matrix}
 1 & \frac{3}{2} & \frac{3}{2} &\frac{3}{2} & 3 & \frac{3}{2} & 1 & \frac{3}{2} &\frac{3}{2} & 1  \\
-\lambda_0(\xi_{210})^3 & \frac{3}{2} \lambda_0(\xi_{210})^2 \lambda_1(\xi_{210}) & 0 & \frac{3}{2} \lambda_0(\xi_{210}) \lambda_1(\xi_{210})^2 & 0 & 0 & \lambda_1(\xi_{210})^3 & 0 &0 & 0  \\
-\lambda_0(\xi_{201})^3 & 0 & \frac{3}{2}\lambda_0(\xi_{201})^2 \lambda_2(\xi_{201}) & 0 & 0 & \frac{3}{2} \lambda_0(\xi_{201}) \lambda_2(\xi_{201})^2& 0 & 0 &0 & \lambda_2(\xi_{201})^3  \\
-\lambda_0(\xi_{120})^3 & \frac{3}{2} \lambda_0(\xi_{120})^2 \lambda_1(\xi_{120}) & 0 & \frac{3}{2} \lambda_0(\xi_{120}) \lambda_1(\xi_{120})^2 & 0 & 0 & \lambda_1(\xi_{120})^3 & 0 &0 & 0  \\
-\lambda_0(\xi_{111})^3 & \frac{3}{2} \lambda_0(\xi_{111})^2 \lambda_1(\xi_{111}) & \frac{3}{2}\lambda_0(\xi_{111})^2 \lambda_2(\xi_{111}) & \frac{3}{2} \lambda_0(\xi_{111}) \lambda_1(\xi_{111})^2 & 3 \lambda_0(\xi_{111})\lambda_1(\xi_{111})\lambda_2(\xi_{111}) & \frac{3}{2} \lambda_0(\xi_{111}) \lambda_2(\xi_{111})^2& \lambda_1(\xi_{111})^3 & \frac{3}{2} \lambda_1(\xi_{111})^2 \lambda_2(\xi_{111}) &\frac{3}{2} \lambda_1(\xi_{111})\lambda_2(\xi_{111})^2 & \lambda_2(\xi_{111})^3  \\
-\lambda_0(\xi_{102})^3 & 0 & \frac{3}{2}\lambda_0(\xi_{102})^2 \lambda_2(\xi_{102}) & 0 & 0 & \frac{3}{2} \lambda_0(\xi_{102}) \lambda_2(\xi_{102})^2& 0 & 0 &0 & \lambda_2(\xi_{102})^3  \\
+\lambda_{0_{210}}^3 & \frac{3}{2} \lambda_{0_{210}}^2 \lambda_{1_{210}} & 0 & \frac{3}{2} \lambda_{0_{210}} \lambda_{1_{210}}^2 & 0 & 0 & \lambda_{1_{210}}^3 & 0 &0 & 0  \\
+\lambda_{0_{201}}^3 & 0 & \frac{3}{2}\lambda_{0_{201}}^2 \lambda_{2_{201}} & 0 & 0 & \frac{3}{2} \lambda_{0_{201}} \lambda_{2_{201}}^2& 0 & 0 &0 & \lambda_{2_{201}}^3  \\
+\lambda_{0_{120}}^3 & \frac{3}{2} \lambda_{0_{120}}^2 \lambda_{1_{120}} & 0 & \frac{3}{2} \lambda_{0_{120}} \lambda_{1_{120}}^2 & 0 & 0 & \lambda_{1_{120}}^3 & 0 &0 & 0  \\
+\lambda_{0_{111}}^3 & \frac{3}{2} \lambda_{0_{111}}^2 \lambda_{1_{111}} & \frac{3}{2}\lambda_{0_{111}}^2 \lambda_{2_{111}} & \frac{3}{2} \lambda_{0_{111}} \lambda_{1_{111}}^2 & 3 \lambda_{0_{111}}\lambda_{1_{111}}\lambda_{2_{111}} & \frac{3}{2} \lambda_{0_{111}} \lambda_{2_{111}}^2& \lambda_{1_{111}}^3 & \frac{3}{2} \lambda_{1_{111}}^2 \lambda_{2_{111}} &\frac{3}{2} \lambda_{1_{111}}\lambda_{2_{111}}^2 & \lambda_{2_{111}}^3  \\
+\lambda_{0_{102}}^3 & 0 & \frac{3}{2}\lambda_{0_{102}}^2 \lambda_{2_{102}} & 0 & 0 & \frac{3}{2} \lambda_{0_{102}} \lambda_{2_{102}}^2& 0 & 0 &0 & \lambda_{2_{102}}^3  \\
 1 & \frac{3}{2} & \frac{3}{2} &\frac{3}{2} & 3 & \frac{3}{2} & 1 & \frac{3}{2} &\frac{3}{2} & 1  \\
-0 & 0 & 0 & 0 & 0 & 0 & \lambda_1(\xi_{021})^3 & \frac{3}{2} \lambda_1(\xi_{021})^2 \lambda_2(\xi_{021}) &\frac{3}{2} \lambda_1(\xi_{021})\lambda_2(\xi_{021})^2 & \lambda_2(\xi_{021})^3  \\
-0 & 0 & 0 & 0 & 0 & 0 & \lambda_1(\xi_{012})^3 & \frac{3}{2} \lambda_1(\xi_{012})^2 \lambda_2(\xi_{012}) &\frac{3}{2} \lambda_1(\xi_{012})\lambda_2(\xi_{012})^2 & \lambda_2(\xi_{012})^3  \\
+0 & 0 & 0 & 0 & 0 & 0 & \lambda_{1_{021}}^3 & \frac{3}{2} \lambda_{1_{021}}^2 \lambda_{2_{021}} &\frac{3}{2} \lambda_{1_{021}}\lambda_{2_{021}}^2 & \lambda_{2_{021}}^3  \\
+0 & 0 & 0 & 0 & 0 & 0 & \lambda_{1_{012}}^3 & \frac{3}{2} \lambda_{1_{012}}^2 \lambda_{2_{012}} &\frac{3}{2} \lambda_{1_{012}}\lambda_{2_{012}}^2 & \lambda_{2_{012}}^3  \\
 1 & \frac{3}{2} & \frac{3}{2} &\frac{3}{2} & 3 & \frac{3}{2} & 1 & \frac{3}{2} &\frac{3}{2} & 1  \\
+\end{matrix}\right)\\
+&=&
+\left(\begin{matrix}
+1.0000&    1.5000&    1.5000&    1.5000&    3.0000&    1.5000&    1.0000&    1.5000&    1.5000&    1.0000\\
+0.2963&    0.2222&         0&    0.1111&         0&         0&    0.0370&         0&         0&         0\\
+0.2963&         0&    0.2222&         0&         0&    0.1111&         0&         0&         0&    0.0370\\
+0.0370&    0.1111&         0&    0.2222&         0&         0&    0.2963&         0&         0&         0\\
+0.0370&    0.0556&    0.0556&    0.0556&    0.1111&    0.0556&    0.0370&    0.0556&    0.0556&    0.0370\\
+0.0370&         0&    0.1111&         0&         0&    0.2222&         0&         0&         0&    0.2963\\
+1.0000&    1.5000&    1.5000&    1.5000&    3.0000&    1.5000&    1.0000&    1.5000&    1.5000&    1.0000\\
+     0&         0&         0&         0&         0&         0&    0.2963&    0.2222&    0.1111&    0.0370\\
+     0&         0&         0&         0&         0&         0&    0.0370&    0.1111&    0.2222&    0.2963\\
+1.0000&    1.5000&    1.5000&    1.5000&    3.0000&    1.5000&    1.0000&    1.5000&    1.5000&    1.0000
 \end{matrix}\right)
 \end{eqnarray}
-
-\scriptsize
+}
+\end{sideways}
 
 $\vect{b_{300} \\ b_{210} \\ \vdots \\ b_{003}} = M^{-1}\vect{ f(\xi_{300}) \\ f(\xi_{210}) \\ \vdots \\ f(\xi_{003})}$
 
+Ausrechnen ergibt dann
+$\vect{b_{300} \\ b_{210} \\ \vdots \\ b_{003}} =
+\vect{
+ 1.0033\\
+ 0.1806\\
+ 0.0657\\
+ 0.2036\\
+-0.9170\\
+-0.1757\\
+ 1.2791\\
+ 0.2726\\
+ 0.0082\\
+ 0.1067}$
