@@ -1,0 +1,11 @@
+%!TEX root = main.tex
+
+\section*{Aufgabe 3 Interpolation mit Bezier-Dreiecken}
+Die Baryzentrischen Koordinaten von $v_i$ bezueglich $T_i$ sind auf Grund der Flaechenverhaeltnisse jeweils $3, -1, -1$.\\
+Fuer die folgene Aufteilung ergeben sich die gesuchten Punkte aus
+\begin{align}
+ 	x_0 = -x_2 + 3x_3 - x_1 \\
+ 	d_1 = -d_2 + 3x_2 - d_3 \\
+ 	d_3 = -d_4 + 3x_1 - d_5 \\
+ 	d_5 = -d_6 + 3x_0 - d_1 
+\end{align}
